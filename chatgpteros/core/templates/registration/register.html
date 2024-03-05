@@ -4,19 +4,19 @@
 
 {% load crispy_forms_tags %}
 
-<h3>Login</h3>
+<h3>Registro de usuario</h3>
 
 <br>
 <form action="" method="post">
     {% csrf_token %}
     <div class="card mx_auto" style="width: 30rem;">
         <div class="card-body">
-          <h5 class="card-title">Inicio de sesión</h5>
-          <p class="card-text">Ingrese su usuario y contraseña para acceder.</p>
+          <h5 class="card-title">Registro de usuario</h5>
+          <p class="card-text">Complete los campos para crear su usuario</p>
           {{ form|crispy }}
           <a href="{% url 'home' %}" class="card-link">Inicio</a>
-          <a href="{% url 'register' %}" class="card-link">Registrar</a>
-          <button class="btn btn-sm btn-primary float-end" type="submit">Iniciar Sesión</button>
+          <a href="{% url 'login' %}" class="card-link">Iniciar sesión</a>
+          <button class="btn btn-sm btn-primary float-end" type="submit">Registrarse</button>
         </div>
       </div>
     
