@@ -1,0 +1,20 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block content %}
+{% include 'includes/navigation-fullscreen.html' %}
+
+<main class="main-content  mt-0">
+    <section>
+        <div class="page-header min-vh-75">
+            <h3>Incio</h3>
+            {% if request.user.is_authenticated %}
+            <hr>
+            <h4>
+                {{ user.username | upper }}, bienvenido
+            </h4>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+{% endblock %}
