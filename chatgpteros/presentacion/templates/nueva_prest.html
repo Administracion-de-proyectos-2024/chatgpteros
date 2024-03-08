@@ -9,15 +9,13 @@
 <br>
 <form method="post">
     {% csrf_token %}
-    <div class="card mx_auto" style="width: 30rem;">
+    <div class="card mx_auto" style='width: 100%;'">
         <div class="card-body">
           <h5 class="card-title">Nueva presentacion</h5>
-          <p class="card-text">Complete los campos para crear su usuario</p>
-          {{ form|crispy }}
-          <button class="btn btn-sm btn-primary float-end" type="submit">Registrarse</button>
+          {{ form | crispy }}
+          <button class="btn btn-sm btn-primary float-end" type="submit">Agregar</button>
         </div>
       </div>
-
 </form>
 
 {% endblock %}
