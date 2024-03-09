@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<h3>Lista de presentaciones</h3>
+    
+<br>
+    <ol>
+        {% for presentacion in presentaciones %}
+            <li>
+                <a href="#">{{presentacion}}</a>
+            </li>
+        {% endfor %}
+    </ol>
+{% endblock %}
