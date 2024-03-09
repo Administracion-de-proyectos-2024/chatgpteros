@@ -10,7 +10,8 @@
     <ol>
         {% for presentacion in presentaciones %}
             <li>
-                <a href="#">{{presentacion}}</a>
+                <!-- Se abrira una pantalla de tamaño predeterminado -->
+                <a href="{% url 'presentar' presentacion.id %}" onclick="window.open(this.href, '_blank', 'width=500,height=500'); return false;">{{presentacion}}</a>
             </li>
         {% endfor %}
     </ol>
