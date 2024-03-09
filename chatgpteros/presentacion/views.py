@@ -17,6 +17,10 @@ def nueva(request):
         generar_archivo(texto_formulario)
     return render(request, 'nueva_prest.html', form)
 
+def listaPresentaciones(request):
+    allPtts = Presentacion.objects.all()
+    return render(request, 'lista_ptts.html', {'presentaciones': allPtts})
+
 def generar_archivo(data):
     ficheroArchivos = os.path.join(str(BASE_DIR), 'archivos_txt')
     nombreUnico = False
