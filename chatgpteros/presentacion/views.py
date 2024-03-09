@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .forms import TextForm
 from .models import Presentacion
 from chatgpteros.settings import BASE_DIR
@@ -20,6 +20,14 @@ def nueva(request):
 def listaPresentaciones(request):
     allPtts = Presentacion.objects.all()
     return render(request, 'lista_ptts.html', {'presentaciones': allPtts})
+
+def presentar(request,id=None):
+    contenido = ""
+    if id:
+        presentacion = get_object_or_404(Presentacion, id=id)
+        with open(presentacion.archivoTxt.path, 'r') as file:
+            contenido = file.read()
+    return render(request, 'pag_presentar.html', {'contenido': contenido})
 
 def generar_archivo(data):
     ficheroArchivos = os.path.join(str(BASE_DIR), 'archivos_txt')
