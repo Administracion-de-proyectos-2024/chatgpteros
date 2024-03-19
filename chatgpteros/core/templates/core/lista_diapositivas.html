@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+  <h2>Lista de Diapositivas</h2>
+  {% if diapositivas %}
+    <ul>
+      {% for diapositiva in diapositivas %}
+        <li>{{ diapositiva.titulo }}</li>
+        <p>{{ diapositiva.contenido }}</p>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay diapositivas disponibles.</p>
+  {% endif %}
+{% endblock %}
