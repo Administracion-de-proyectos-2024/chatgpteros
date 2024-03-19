@@ -13,5 +13,5 @@ class CustomUserCreationForm(UserCreationForm):
 class DiapositivaForm(forms.ModelForm):
     class Meta:
         model = Diapositiva
-        fields = ['titulo', 'contenido']
+        fields = ['titulo', 'contenido', 'orden']
 
