@@ -1,0 +1,43 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block content %}
+{% include 'includes/navigation-fullscreen.html' %}
+
+{% load crispy_forms_tags %}
+
+
+<main class="main-content mt-0 d-flex justify-content-center align-items-center">
+    <section>
+        <div class="page-header min-vh-60" style="margin-top: 100px;">
+            <h3>Lista de presentaciones</h3>
+        </div>
+        <div style="width: 1500px; margin-top: 0px;">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                </form>
+            </div>
+        </div>
+        <ul>
+            {% for presentacion in presentaciones %}
+                <li>
+                    <!-- Se abrira una pantalla de tamaño predeterminado -->
+                    <a href="{% url 'presentacion_app:presentar' presentacion.id %}" onclick="window.open(this.href, '_blank', 'width=500,height=500'); return false;">{{presentacion}}</a>
+                </li>
+            {% endfor %}
+            </ul>
+    </section>
+</main>
+
+{% if request.user.is_superuser %}
+<div class="page-header min-vh-60 d-flex justify-content-center align-items-center">
+    <ul class="navbar-nav d-lg-block d-none">
+        <li class="nav-item">
+          <a href="{% url 'presentacion_app:nueva' %}" class="btn btn-sm btn-round mb-0 me-1 bg-gradient-dark">Agregar nueva presentación</a>
+        </li>
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}

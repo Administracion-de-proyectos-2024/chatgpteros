@@ -3,17 +3,39 @@
 {% block content %}
 {% include 'includes/navigation-fullscreen.html' %}
 
-<main class="main-content  mt-0">
+<main class="main-content mt-0 d-flex justify-content-center align-items-center">
     <section>
-        <div class="page-header min-vh-75">
-            <h3>Incio</h3>
-            {% if request.user.is_authenticated %}
-            <hr>
-            <h4>
-                {{ user.username | upper }}, bienvenido
-            </h4>
-            {% endif %}
+        {% if not request.user.is_authenticated %}
+        <div style="margin-top: 100px;">
+            <h3>Creador de presentaciones</h3>
+            <div>
+                <p>
+                    Este proyecto para la clase de administración de proyectos
+                </p>
+                <p>
+                    es un creador de presentaciones a base de texto el cual solo
+                </p>
+                <p>
+                    se necesita de escribir y en base a esto se genera una presentación
+                </p>
+            </div>
         </div>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+            <div class="page-header min-vh-60" style="margin-top: 100px;">
+                <h4>{{ user.username | upper }}, bienvenido</h4>
+            </div>
+            <div>
+                <p>
+                    Si vas a la pestaña llamada "presentaciones" veras un listado
+                </p>
+                <p>
+                    de todas las presentaciones disponibles y si eres administrador
+                </p>
+                <p>
+                    podras ver y crear dichas presentaciones
+            </div>
+            {% endif %}
     </section>
 </main>
 

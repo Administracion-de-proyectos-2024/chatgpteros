@@ -13,7 +13,7 @@ def presentaciones(request):
 
 def exit(request):
     logout(request)
-    return redirect('home')
+    return redirect('core_app:home')
 
 def register(request):
     data = {
@@ -24,5 +24,5 @@ def register(request):
         user_creation_form = CustomUserCreationForm(data=request.POST)
         if user_creation_form.is_valid():
             user_creation_form.save()
-            return redirect('home')
+            return redirect('core_app:home')
     return render(request,'registration/register.html', data)

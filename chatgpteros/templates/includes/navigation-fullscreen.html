@@ -16,15 +16,15 @@
           
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'core_app:home' %}">Inicio</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'core_app:presentaciones' %}">Presentaciones</a>
-              </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'core_app:home' %}">Inicio</a>
+                </li>
               {% if request.user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'exit' %}">Salir</a>
+                  <a class="nav-link" href="{% url 'presentacion_app:lista_presentaciones' %}">Presentaciones</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'core_app:exit' %}">Salir</a>
                 </li>
               {% else %}
                 <li class="nav-item">
