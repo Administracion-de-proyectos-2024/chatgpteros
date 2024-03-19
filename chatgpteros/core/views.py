@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm
 from .models import Diapositiva
+from .forms import DiapositivaForm
+
 
 
 # Create your views here.
@@ -49,10 +51,24 @@ def crear_diapositiva(request):
         form = DiapositivaForm()
     return render(request, 'core/crear_diapositiva.html', {'form': form})
 
+def lista_diapositivas(request):
+    diapositivas = Diapositiva.objects.all()
+    return render(request, 'core/lista_diapositivas.html', {'diapositivas': diapositivas})
 
-def borrar_presentacion(request, presentacion_id):
-    presentacion = Presentacion.objects.get(pk=presentacion_id)
+
+@login_required
+def actualizar_diapositiva(request, diapositiva_id):
+    diapositiva = get_object_or_404(Diapositiva, pk=diapositiva_id)
+    if request.method == 'POST':
+        form = DiapositivaForm(request.POST, instance=diapositiva)
+        if form.is_valid():
+            form.save()
+            return redirect('presentaciones')
+    else:
+        form = DiapositivaForm(instance=diapositiva)
+    return render(request, 'core/actualizar_diapositiva.html', {'form': form})
+
+def borrar_diapositiva(request, presentacion_id):
+    presentacion = get_object_or_404(Presentacion, pk=presentacion_id)
     presentacion.delete()
     return redirect('lista_presentaciones')
-
-
