@@ -46,6 +46,8 @@ def lista_diapositivas(request):
         diapositiva.contenido_html = markdown.markdown(diapositiva.contenido)
     return render(request, 'core/lista_diapositivas.html', {'diapositivas': diapositivas})
 
+
+
 @login_required
 def actualizar_diapositiva(request, diapositiva_id):
     diapositiva = get_object_or_404(Diapositiva, pk=diapositiva_id)
