@@ -17,7 +17,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('crear_diapositiva/', crear_diapositiva, name='crear_diapositiva'),
     path('lista_diapositivas/', lista_diapositivas, name='lista_diapositivas'),
-    path('borrar_presentacion/<int:presentacion_id>/', borrar_diapositiva, name='borrar_presentacion'),
+    path('borrar_diapositiva/<int:diapositiva_id>/', borrar_diapositiva, name='borrar_diapositiva'),
     path('actualizar_diapositiva/<int:diapositiva_id>/', actualizar_diapositiva, name='actualizar_diapositiva'),
    
 

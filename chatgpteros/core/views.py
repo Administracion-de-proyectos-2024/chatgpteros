@@ -1,42 +1,30 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, DiapositivaForm
 from .models import Diapositiva
-from .forms import DiapositivaForm
-
-
-
-# Create your views here.
+import markdown
 
 def home(request):  
-    return render(request,'core/home.html')
-
-@login_required
-def presentaciones(request):  
-    return render(request,'core/presentaciones.html')
-
-def exit(request):
-    logout(request)
-    return redirect('home')
-
-def register(request):
-    data = {
-        'form': CustomUserCreationForm()
-    }
-
-    if request.method == 'POST':
-        user_creation_form = CustomUserCreationForm(data=request.POST)
-        if user_creation_form.is_valid():
-            user_creation_form.save()
-            return redirect('home')
-    return render(request,'registration/register.html', data)
+    return render(request, 'core/home.html')
 
 @login_required
 def presentaciones(request):
     presentaciones = Diapositiva.objects.filter(usuario=request.user).order_by('orden')
     return render(request, 'core/presentaciones.html', {'presentaciones': presentaciones})
 
+def exit(request):
+    logout(request)
+    return redirect('home')
+
+def register(request):
+    data = {'form': CustomUserCreationForm()}
+    if request.method == 'POST':
+        user_creation_form = CustomUserCreationForm(data=request.POST)
+        if user_creation_form.is_valid():
+            user_creation_form.save()
+            return redirect('home')
+    return render(request, 'registration/register.html', data)
 
 @login_required
 def crear_diapositiva(request):
@@ -51,10 +39,12 @@ def crear_diapositiva(request):
         form = DiapositivaForm()
     return render(request, 'core/crear_diapositiva.html', {'form': form})
 
+@login_required
 def lista_diapositivas(request):
     diapositivas = Diapositiva.objects.all()
+    for diapositiva in diapositivas:
+        diapositiva.contenido_html = markdown.markdown(diapositiva.contenido)
     return render(request, 'core/lista_diapositivas.html', {'diapositivas': diapositivas})
-
 
 @login_required
 def actualizar_diapositiva(request, diapositiva_id):
@@ -68,7 +58,8 @@ def actualizar_diapositiva(request, diapositiva_id):
         form = DiapositivaForm(instance=diapositiva)
     return render(request, 'core/actualizar_diapositiva.html', {'form': form})
 
-def borrar_diapositiva(request, presentacion_id):
-    presentacion = get_object_or_404(Presentacion, pk=presentacion_id)
-    presentacion.delete()
-    return redirect('lista_presentaciones')
+@login_required
+def borrar_diapositiva(request, diapositiva_id):
+    diapositiva = get_object_or_404(Diapositiva, pk=diapositiva_id)
+    diapositiva.delete()
+    return redirect('lista_diapositivas')

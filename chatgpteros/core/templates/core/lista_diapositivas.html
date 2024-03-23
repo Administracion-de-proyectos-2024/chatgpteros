@@ -1,26 +1,15 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+    <h3>Lista de Diapositivas</h3>
 
-<h3>Lista de Diapositivas</h3>
-
-{% if diapositivas %}
-  <ul>
-    {% for diapositiva in diapositivas %}
-      <li>
-        <h5>{{ diapositiva.titulo }}</h5>
-        <p>{{ diapositiva.contenido }}</p>
-        <form action="{% url 'borrar_diapositiva' diapositiva.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit">Eliminar</button>
-        </form>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No hay diapositivas disponibles.</p>
-{% endif %}
-
-<a href="{% url 'crear_diapositiva' %}" class="btn btn-primary">Crear Diapositiva</a>
-
+    {% if diapositivas %}
+        {% for diapositiva in diapositivas %}
+            <div class="diapositiva">
+                {{ diapositiva.contenido | safe }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No hay diapositivas disponibles.</p>
+    {% endif %}
 {% endblock %}
