@@ -4,18 +4,72 @@ from django.contrib.auth import logout
 from .forms import CustomUserCreationForm, DiapositivaForm
 from .models import Diapositiva
 import markdown
+from django.http import HttpResponse
+
+import os
+
 
 def home(request):  
     return render(request, 'core/home.html')
 
+
 @login_required
 def presentaciones(request):
-    presentaciones = Diapositiva.objects.filter(usuario=request.user).order_by('orden')
+    directorio_de_archivos_txt = 'C:\\Users\\Yosseline\\Documents\\Admin_proyec\\chatgpteros\\chatgpteros\\core\\archivos_txt'
+    txt_files = [f for f in os.listdir(directorio_de_archivos_txt) if f.endswith('.txt')]
+
+    presentaciones = []
+    for txt_file in txt_files:
+        with open(os.path.join(directorio_de_archivos_txt, txt_file), 'r') as file:
+            titulo = os.path.splitext(txt_file)[0]  # Obtener el nombre del archivo sin la extensión .txt
+            contenido = file.read()
+            presentaciones.append({'titulo': titulo, 'contenido': contenido})
+
     return render(request, 'core/presentaciones.html', {'presentaciones': presentaciones})
+
+
+@login_required
+def presentaciones_archivos_txt(request):
+    directorio_de_archivos_txt = 'C:\\Users\\Yosseline\\Documents\\Admin_proyec\\chatgpteros\\chatgpteros\\core\\archivos_txt'
+
+    # Verificar que el directorio exista
+    if not os.path.exists(directorio_de_archivos_txt):
+        return HttpResponse("El directorio de archivos de presentación no existe", status=404)
+
+    # Leer todos los archivos .txt en el directorio
+    txt_files = [f for f in os.listdir(directorio_de_archivos_txt) if f.endswith('.txt')]
+
+    # Procesar los archivos de presentación
+    diapositivas = []
+    for txt_file in txt_files:
+        archivo_presentacion = os.path.join(directorio_de_archivos_txt, txt_file)
+        with open(archivo_presentacion, 'r', encoding='utf-8') as file:
+            lineas = file.readlines()
+
+        # Procesar las líneas para dividir títulos y texto
+        titulo_actual = None
+        texto_actual = ""
+        for linea in lineas:
+            if linea.startswith("#"):
+                # Nueva diapositiva encontrada
+                if titulo_actual:
+                    diapositivas.append({'titulo': titulo_actual, 'contenido': texto_actual})
+                    texto_actual = ""
+                titulo_actual = linea[1:].strip()  # Remover el carácter de título y eliminar espacios en blanco
+            elif linea.startswith("-"):
+                # Texto de la diapositiva
+                texto_actual += linea[1:]  # Remover el carácter de texto
+        # Agregar la última diapositiva
+        if titulo_actual:
+            diapositivas.append({'titulo': titulo_actual, 'contenido': texto_actual})
+
+    return render(request, 'core/presentaciones_archivos_txt.html', {'presentaciones': diapositivas})
+
 
 def exit(request):
     logout(request)
     return redirect('home')
+
 
 def register(request):
     data = {'form': CustomUserCreationForm()}
@@ -25,6 +79,7 @@ def register(request):
             user_creation_form.save()
             return redirect('home')
     return render(request, 'registration/register.html', data)
+
 
 @login_required
 def crear_diapositiva(request):
@@ -39,13 +94,13 @@ def crear_diapositiva(request):
         form = DiapositivaForm()
     return render(request, 'core/crear_diapositiva.html', {'form': form})
 
+
 @login_required
 def lista_diapositivas(request):
     diapositivas = Diapositiva.objects.all()
     for diapositiva in diapositivas:
         diapositiva.contenido_html = markdown.markdown(diapositiva.contenido)
     return render(request, 'core/lista_diapositivas.html', {'diapositivas': diapositivas})
-
 
 
 @login_required
@@ -60,8 +115,15 @@ def actualizar_diapositiva(request, diapositiva_id):
         form = DiapositivaForm(instance=diapositiva)
     return render(request, 'core/actualizar_diapositiva.html', {'form': form})
 
+
 @login_required
 def borrar_diapositiva(request, diapositiva_id):
     diapositiva = get_object_or_404(Diapositiva, pk=diapositiva_id)
     diapositiva.delete()
     return redirect('lista_diapositivas')
+
+
+def presentacion_completa(request):
+    diapositivas = Diapositiva.objects.all()
+    return render(request, 'core/presentacion_completa.html', {'diapositivas': diapositivas})
+
