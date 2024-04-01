@@ -1,23 +1,28 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h3>Lista de Diapositivas</h3>
-
-{% if diapositivas %}
-<ul>
-  {% for diapositiva in diapositivas %}
-  <li>
-    <h5>{{ diapositiva.titulo }}</h5>
-    <p>{{ diapositiva.contenido_html|safe }}</p>
-    <form action="{% url 'borrar_diapositiva' diapositiva.id %}" method="post">
-      {% csrf_token %}
-      <button type="submit">Eliminar</button>
-    </form>
-  </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>No hay diapositivas disponibles.</p>
-{% endif %}
-
+  <h3>Orden Diapositivas</h3>
+  <ul>
+    {% for diapositiva in diapositivas %}
+      <li>
+        <h5>{{ diapositiva.titulo }}</h5>
+        <div>{{ diapositiva.contenido_html|safe }}</div> 
+        <form action="{% url 'borrar_diapositiva' diapositiva.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Borrar</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+  
+  <!-- Botones al final de la lista -->
+  <div class="text-center">
+    <a href="{% url 'crear_diapositiva' %}" class="btn btn-primary">Crear Diapositiva</a>
+    <a href="{% url 'presentacion_completa' %}" class="btn btn-secondary">Ver Presentación Completa</a>
+  </div>
+  
+  <!-- Botón para regresar -->
+  <div class="text-center mt-3">
+    <a href="{% url 'home' %}" class="btn btn-primary">Regresar</a>
+  </div>
 {% endblock %}
