@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h3>Presentaciones</h3>
+<h3> Menú Presentaciones</h3>
 
 {% if presentaciones %}
 <div id="presentacion" class="carousel slide" data-bs-ride="carousel">
@@ -29,8 +29,20 @@
 
 <a href="{% url 'crear_diapositiva' %}" class="btn btn-primary">Crear Diapositiva</a>
 
+<div class="text-center mt-3">
+  <a href="{% url 'presentaciones_archivos_txt' %}" class="btn btn-primary">Diapositivas TXT</a>
+</div>
 
-<a href="{% url 'presentacion_completa' %}" class="btn btn-primary">Ver Presentación Completa</a>
+<div class="text-center mt-3">
+  <a href="{% url 'lista_diapositivas' %}" class="btn btn-primary">Lista Diapositivas</a>
+</div>
+
+
+<div class="text-center mt-3">
+<a href="{% url 'presentacion_completa' %}" class="btn btn-primary">Diapositivas Completas</a>
+</div>
+
+
 
 {% endblock %}
 
