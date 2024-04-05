@@ -94,7 +94,7 @@ def actualizar_diapositiva(request, diapositiva_id):
         form = DiapositivaForm(request.POST, instance=diapositiva)
         if form.is_valid():
             form.save()
-            return redirect('presentaciones')
+            return redirect('lista_diapositivas')  # Redirección actualizada a lista_diapositivas
     else:
         form = DiapositivaForm(instance=diapositiva)
     return render(request, 'core/actualizar_diapositiva.html', {'form': form})
