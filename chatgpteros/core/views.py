@@ -15,7 +15,7 @@ def home(request):
 
 @login_required
 def presentaciones(request):
-    directorio_de_archivos_txt = 'C:\\Users\\Yosseline\\Documents\\Admin_proyec\\chatgpteros\\chatgpteros\\core\\archivos_txt'
+    directorio_de_archivos_txt = 'core/archivos_txt'
     txt_files = [f for f in os.listdir(directorio_de_archivos_txt) if f.endswith('.txt')]
 
     presentaciones = []
@@ -30,7 +30,7 @@ def presentaciones(request):
 
 @login_required
 def presentaciones_archivos_txt(request):
-    directorio_de_archivos_txt = 'C:\\Users\\Yosseline\\Documents\\Admin_proyec\\chatgpteros\\chatgpteros\\core\\archivos_txt'
+    directorio_de_archivos_txt = 'core/archivos_txt'
 
     # Verificar que el directorio exista
     if not os.path.exists(directorio_de_archivos_txt):
@@ -40,30 +40,14 @@ def presentaciones_archivos_txt(request):
     txt_files = [f for f in os.listdir(directorio_de_archivos_txt) if f.endswith('.txt')]
 
     # Procesar los archivos de presentación
-    diapositivas = []
+    presentaciones = []
     for txt_file in txt_files:
-        archivo_presentacion = os.path.join(directorio_de_archivos_txt, txt_file)
-        with open(archivo_presentacion, 'r', encoding='utf-8') as file:
-            lineas = file.readlines()
+        with open(os.path.join(directorio_de_archivos_txt, txt_file), 'r') as file:
+            titulo = os.path.splitext(txt_file)[0]  # Obtener el nombre del archivo sin la extensión .txt
+            contenido = file.read()
+            presentaciones.append({'titulo': titulo, 'contenido': contenido})
 
-        # Procesar las líneas para dividir títulos y texto
-        titulo_actual = None
-        texto_actual = ""
-        for linea in lineas:
-            if linea.startswith("#"):
-                # Nueva diapositiva encontrada
-                if titulo_actual:
-                    diapositivas.append({'titulo': titulo_actual, 'contenido': texto_actual})
-                    texto_actual = ""
-                titulo_actual = linea[1:].strip()  # Remover el carácter de título y eliminar espacios en blanco
-            elif linea.startswith("-"):
-                # Texto de la diapositiva
-                texto_actual += linea[1:]  # Remover el carácter de texto
-        # Agregar la última diapositiva
-        if titulo_actual:
-            diapositivas.append({'titulo': titulo_actual, 'contenido': texto_actual})
-
-    return render(request, 'core/presentaciones_archivos_txt.html', {'presentaciones': diapositivas})
+    return render(request, 'core/presentaciones_archivos_txt.html', {'presentaciones': presentaciones})
 
 
 def exit(request):
