@@ -106,8 +106,15 @@ def borrar_diapositiva(request, diapositiva_id):
     diapositiva.delete()
     return redirect('lista_diapositivas')
 
-
+@login_required
 def presentacion_completa(request):
     diapositivas = Diapositiva.objects.all()
     return render(request, 'core/presentacion_completa.html', {'diapositivas': diapositivas})
+
+
+
+@login_required
+def ver_diapositiva(request, diapositiva_id):
+    diapositiva = get_object_or_404(Diapositiva, pk=diapositiva_id)
+    return render(request, 'core/ver_diapositiva.html', {'diapositiva': diapositiva})
 
