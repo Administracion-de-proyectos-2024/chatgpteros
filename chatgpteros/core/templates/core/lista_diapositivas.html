@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+  <h3>Orden Diapositivas</h3>
+  <ul>
+    {% for diapositiva in diapositivas %}
+      <li>
+        <h5>{{ diapositiva.titulo }}</h5>
+        <div>{{ diapositiva.contenido_html|safe }}</div> 
+        <form action="{% url 'borrar_diapositiva' diapositiva.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Borrar</button>
+          <a href="{% url 'actualizar_diapositiva' diapositiva.id %}" class="btn btn-primary">Editar</a>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+  
+  <div class="text-center">
+    <a href="{% url 'crear_diapositiva' %}" class="btn btn-primary">Crear Diapositiva</a>
+    <a href="{% url 'presentacion_completa' %}" class="btn btn-secondary">Ver Presentación Completa</a>
+  </div>
+  
+  <a href="{% url 'presentaciones' %}" class="btn btn-secondary mt-3">Regresar</a>
+{% endblock %}
+
