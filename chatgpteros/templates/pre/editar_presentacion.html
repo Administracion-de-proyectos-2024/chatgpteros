@@ -1,0 +1,23 @@
+<!-- editar_presentacion.html -->
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Editar Presentación</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ presentacion_form.as_p }}
+
+    <!-- Agrega aquí los campos para editar las diapositivas -->
+    <fieldset>
+        <legend>Diapositivas</legend>
+        {{ diapositiva_formset.management_form }}
+        <div id="formset-container">
+            {% for form in diapositiva_formset %}
+                {{ form.as_p }}
+            {% endfor %}
+        </div>
+    </fieldset>
+
+    <button type="submit">Guardar Cambios</button>
+</form>
+{% endblock %}

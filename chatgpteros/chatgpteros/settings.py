@@ -39,15 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< Updated upstream
-    'core',
-=======
     'markdown_deux',
     'pagedown',
-    'applications.core',
-    'applications.presentacion',
+    'core',
     'rest_framework',
->>>>>>> Stashed changes
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -68,7 +63,7 @@ ROOT_URLCONF = 'chatgpteros.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

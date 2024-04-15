@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import Diapositiva, Presentacion
+from applications.core.models import Diapositiva, Presentacion
 
 # Register your models here.
 admin.site.register(Presentacion)

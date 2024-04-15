@@ -1,9 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Presentación</title>
+    <style>
+        /* Agrega este estilo para especificar un ancho fijo para los campos de texto */
+        textarea {
+            width: 500px;  /* Ajusta este valor según tus necesidades */
+        }
+    </style>
 </head>
 <body>
     <h1>Nueva Presentación</h1>
@@ -57,3 +66,4 @@
         
 </body>
 </html>
+{% endblock %}

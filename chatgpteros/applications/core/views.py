@@ -16,7 +16,7 @@ def home(request):
 
 def exit(request):
     logout(request)
-    return redirect('home')
+    return redirect('core_app:home')
 
 
 def register(request):
@@ -25,7 +25,7 @@ def register(request):
         user_creation_form = CustomUserCreationForm(data=request.POST)
         if user_creation_form.is_valid():
             user_creation_form.save()
-            return redirect('home')
+            return redirect('core_app:home')
 
     return render(request,'registration/register.html', data)
 
@@ -56,7 +56,7 @@ def nueva_presentacion(request):
                 diapositiva.save()
                 print(f"Contenido de la diapositiva guardada correctamente: {diapositiva.contenido}")
                 
-            return redirect('detalle_presentacion', pk=presentacion.pk)
+            return redirect('core_app:detalle_presentacion', pk=presentacion.pk)
     else:
         presentacion_form = PresentacionForm()
         diapositiva_formset = DiapositivaFormSet(queryset=Diapositiva.objects.none())
@@ -75,27 +75,3 @@ def detalle_presentacion(request, pk):
     return render(request, 'pre/detalle_presentacion.html', {'presentacion': presentacion, 'diapositivas': diapositivas})
 
 
-def editar_presentacion(request, pk):
-    presentacion = get_object_or_404(Presentacion, pk=pk)
-    
-    if request.method == 'POST':
-        presentacion_form = PresentacionForm(request.POST, instance=presentacion)
-        diapositiva_formset = DiapositivaFormSet(request.POST, instance=presentacion)
-        
-        if presentacion_form.is_valid() and diapositiva_formset.is_valid():
-            presentacion_form.save()
-            diapositiva_formset.save()
-            return redirect('detalle_presentacion', pk=presentacion.pk)
-    else:
-        presentacion_form = PresentacionForm(instance=presentacion)
-        diapositiva_formset = DiapositivaFormSet(instance=presentacion)
-    
-    return render(request, 'pre/editar_presentacion.html', {'presentacion_form': presentacion_form, 'diapositiva_formset': diapositiva_formset})
-
-
-def eliminar_presentacion(request, pk):
-    presentacion = get_object_or_404(Presentacion, pk=pk)
-    if request.method == 'POST':
-        presentacion.delete()
-        return redirect('presentaciones_disponibles')
-    return render(request, 'pre/eliminar_presentacion.html', {'presentacion': presentacion})

@@ -1,0 +1,11 @@
+<!-- eliminar_presentacion.html -->
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Eliminar Presentación</h2>
+<p>¿Estás seguro de que quieres eliminar la presentación "{{ presentacion.nombre }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, Eliminar</button>
+</form>
+{% endblock %}
