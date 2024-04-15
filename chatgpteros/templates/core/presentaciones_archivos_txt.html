@@ -1,0 +1,16 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block content %}
+  <div id="presentacion">
+    {% for presentacion in presentaciones %}
+      <div class="diapositiva">
+        <h3>{{ presentacion.titulo }}</h3>
+        <div>{{ presentacion.contenido|safe }}</div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div class="text-center mt-3">
+    <a href="{% url 'core_app:presentaciones' %}" class="btn btn-primary">Regresar</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentaciones Disponibles</title>
+</head>
+<body>
+    <h1>Presentaciones Disponibles</h1>
+    
+    <ul>
+        {% for presentacion in presentaciones %}
+            <li>
+                <a href="{% url 'core_app:ver_presentacion' presentacion_id=presentacion.id %}"><h2>{{ diapositiva.titulo }}</h2></a>
+                <p>{{ presentacion.descripcion }}</p>
+                <a href="{% url 'core_app:editar_presentacion' presentacion.id %}">Editar</a>
+                <form method="post" action="{% url 'core_app:borrar_presentacion' presentacion_id=presentacion.id %}">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta presentación?')">Eliminar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'core_app:crear_presentacion_y_diapositivas' %}"><button>Crear presentación</button></a>
+</body>
+</html>
+
+{% endblock %}

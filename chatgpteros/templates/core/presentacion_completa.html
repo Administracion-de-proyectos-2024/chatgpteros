@@ -1,0 +1,74 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block content %}
+  <div id="presentacion">
+    {% for diapositiva in diapositivas %}
+      <div class="diapositiva">
+        <h3>{{ diapositiva.titulo }}</h3>
+        <p>{{ diapositiva.contenido }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  
+ 
+  <div class="text-center mt-3">
+    <a href="{% url 'core_app:home' %}" class="btn btn-primary">Cerrar</a>
+  </div>
+{% endblock %}
+
+<script>
+    var diapositivas = document.querySelectorAll('.diapositiva');
+    var indiceDiapositiva = 0; // Índice de la diapositiva actual
+  
+    function mostrarDiapositiva(indice) {
+      // Ocultar todas las diapositivas
+      diapositivas.forEach(function(diapositiva) {
+        diapositiva.style.display = 'none';
+      });
+      // Mostrar la diapositiva actual
+      diapositivas[indice].style.display = 'block';
+    }
+  
+    // Mostrar la primera diapositiva al cargar la página
+    mostrarDiapositiva(indiceDiapositiva);
+  
+    // Función para avanzar a la siguiente diapositiva
+    function siguienteDiapositiva() {
+      if (indiceDiapositiva < diapositivas.length - 1) {
+        indiceDiapositiva++;
+      } else {
+        indiceDiapositiva = 0; 
+      }
+      mostrarDiapositiva(indiceDiapositiva);
+    }
+  
+    // Función para retroceder a la diapositiva anterior
+    function diapositivaAnterior() {
+      if (indiceDiapositiva > 0) {
+        indiceDiapositiva--;
+      } else {
+        indiceDiapositiva = diapositivas.length - 1; 
+      }
+      mostrarDiapositiva(indiceDiapositiva);
+    }
+  
+    //Eventos de teclado para la navegación
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowLeft') {
+        diapositivaAnterior(); 
+      } else if (event.key === 'ArrowRight') {
+        siguienteDiapositiva(); 
+      }
+    });
+  
+    // Clics en la pantalla para la navegación
+    document.addEventListener('click', function(event) {
+      var x = event.clientX; 
+      var width = window.innerWidth; 
+      if (x < width / 2) {
+        diapositivaAnterior(); 
+      } else {
+        siguienteDiapositiva(); 
+      }
+    });
+</script>

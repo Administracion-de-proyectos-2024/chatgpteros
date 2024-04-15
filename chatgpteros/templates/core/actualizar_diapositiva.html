@@ -1,0 +1,10 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block content %}
+<h3>Actualizar Diapositiva</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Cambios</button>
+</form>
+{% endblock %}

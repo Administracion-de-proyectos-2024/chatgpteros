@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Presentaciones</title>
+</head>
+<body>
+    <h1>Lista de Presentaciones</h1>
+    <ul>
+        {% for presentacion in presentaciones %}
+            <li><a href="{% url 'core_app:detalle_presentacion' presentacion.pk %}">{{ presentacion.nombre }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'core_app:nueva_presentacion' %}">Crear Nueva Presentación</a>
+</body>
+</html>

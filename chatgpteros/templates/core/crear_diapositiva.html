@@ -1,0 +1,14 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+
+{% block content %}
+<h3>Crear Diapositiva</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar</button>
+</form>
+
+<a href="{% url 'core_app:presentaciones' %}" class="btn btn-secondary mt-3">Regresar</a>
+
+{% endblock %}
