@@ -1,6 +1,0 @@
-<titulo>egfdfd</titulo>
-<descripcion>fgsdffd</descripcion>
-<diapositivas>
-	<diapositiva>sdgfds</diapositiva>
-	<diapositiva>sdgdf</diapositiva>
-	<diapositiva>sgsfddg</diapositiva>

@@ -37,6 +37,7 @@ def presentaciones_disponibles(request):
     presentaciones = Presentacion.objects.all()
     return render(request, 'pre/lista_presentaciones.html', {'presentaciones': presentaciones})
 
+@login_required
 def nueva_presentacion(request):
     if request.method == 'POST':
         presentacion_form = PresentacionForm(request.POST)
@@ -53,7 +54,7 @@ def nueva_presentacion(request):
             # Llamar a la función para generar el archivo de texto
             generar_archivo_presentacion(presentacion)
             
-            return redirect('detalle_presentacion', pk=presentacion.pk)
+            return redirect('presentaciones_disponibles')
     else:
         presentacion_form = PresentacionForm()
         diapositiva_formset = DiapositivaFormSet(queryset=Diapositiva.objects.none())
@@ -63,13 +64,37 @@ def nueva_presentacion(request):
         'diapositiva_formset': diapositiva_formset
     })
 
-
 @login_required
 def detalle_presentacion(request, pk):
-    presentacion = get_object_or_404(Presentacion, pk=pk)
-    diapositivas = Diapositiva.objects.filter(presentacion=presentacion)
-    print("Diapositivas:", diapositivas)  # Agregar este print
-    return render(request, 'pre/detalle_presentacion.html', {'presentacion': presentacion, 'diapositivas': diapositivas})
+    presentacion = Presentacion.objects.get(pk=pk)
+    
+    # Ruta del directorio donde se guardan los archivos
+    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+    
+    # Ruta completa del archivo
+    ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
+    
+    # Leer el archivo
+    with open(ruta_archivo, 'r') as archivo:
+        contenido = archivo.read()
+    
+    # Dividir el contenido en líneas
+    lineas = contenido.split('\n')
+    
+    # Extraer el nombre y la descripción de la presentación
+    nombre = lineas[0].replace('<titulo>', '').replace('</titulo>', '')
+    descripcion = lineas[1].replace('<descripcion>', '').replace('</descripcion>', '')
+    
+    # Extraer las diapositivas
+    diapositivas = []
+    for linea in lineas[2:]:
+        if '<diapositiva>' in linea and '</diapositiva>' in linea:
+            diapositiva = linea.replace('<diapositiva>', '').replace('</diapositiva>', '')
+            diapositivas.append(diapositiva)
+    
+    return render(request, 'pre/detalle_presentacion.html', {'nombre': nombre, 'descripcion': descripcion, 'diapositivas': diapositivas})
+
+
 
 
 def editar_presentacion(request, pk):
@@ -82,7 +107,11 @@ def editar_presentacion(request, pk):
         if presentacion_form.is_valid() and diapositiva_formset.is_valid():
             presentacion_form.save()
             diapositiva_formset.save()
-            return redirect('detalle_presentacion', pk=presentacion.pk)
+
+            # Actualizar el archivo .txt
+            generar_archivo_presentacion(presentacion)
+
+            return redirect('presentaciones_disponibles')
     else:
         presentacion_form = PresentacionForm(instance=presentacion)
         diapositiva_formset = DiapositivaFormSet(instance=presentacion)
@@ -90,11 +119,26 @@ def editar_presentacion(request, pk):
     return render(request, 'pre/editar_presentacion.html', {'presentacion_form': presentacion_form, 'diapositiva_formset': diapositiva_formset})
 
 
+
 def eliminar_presentacion(request, pk):
     presentacion = get_object_or_404(Presentacion, pk=pk)
+    
     if request.method == 'POST':
+        # Ruta del directorio donde se guardan los archivos
+        ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+        
+        # Ruta completa del archivo
+        ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
+        
+        # Eliminar el archivo .txt
+        if os.path.exists(ruta_archivo):
+            os.remove(ruta_archivo)
+        
+        # Eliminar la presentación de la base de datos
         presentacion.delete()
+        
         return redirect('presentaciones_disponibles')
+    
     return render(request, 'pre/eliminar_presentacion.html', {'presentacion': presentacion})
 
 def generar_archivo_presentacion(presentacion):
@@ -122,3 +166,4 @@ def generar_archivo_presentacion(presentacion):
     # Escribir en el archivo
     with open(ruta_archivo, 'w') as archivo:
         archivo.write(contenido)
+        
