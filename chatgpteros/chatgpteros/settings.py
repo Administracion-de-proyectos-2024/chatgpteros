@@ -39,7 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< Updated upstream
     'core',
+=======
+    'markdown_deux',
+    'pagedown',
+    'applications.core',
+    'applications.presentacion',
+    'rest_framework',
+>>>>>>> Stashed changes
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
