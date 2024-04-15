@@ -48,14 +48,11 @@ def nueva_presentacion(request):
             for form in diapositiva_formset:
                 diapositiva = form.save(commit=False)
                 diapositiva.presentacion = presentacion  # Asignar la presentación a cada diapositiva
-                
-                # Imprimir datos de la diapositiva para depuración
-                print("Datos de la diapositiva antes de guardarla:", diapositiva)
-                print("Contenido de la diapositiva antes de guardarla:", diapositiva.contenido)
-                
                 diapositiva.save()
-                print(f"Contenido de la diapositiva guardada correctamente: {diapositiva.contenido}")
-                
+            
+            # Llamar a la función para generar el archivo de texto
+            generar_archivo_presentacion(presentacion)
+            
             return redirect('detalle_presentacion', pk=presentacion.pk)
     else:
         presentacion_form = PresentacionForm()
@@ -99,3 +96,29 @@ def eliminar_presentacion(request, pk):
         presentacion.delete()
         return redirect('presentaciones_disponibles')
     return render(request, 'pre/eliminar_presentacion.html', {'presentacion': presentacion})
+
+def generar_archivo_presentacion(presentacion):
+    # Nombre del archivo
+    nombre_archivo = f"{presentacion.nombre}.txt"
+    
+    # Ruta del directorio donde deseas guardar los archivos
+    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+
+    
+    # Si la ruta no existe, crea el directorio
+    if not os.path.exists(ruta_directorio):
+        os.makedirs(ruta_directorio)
+    
+    # Ruta completa del archivo
+    ruta_archivo = os.path.join(ruta_directorio, nombre_archivo)
+    
+    # Contenido del archivo
+    contenido = f"<titulo>{presentacion.nombre}</titulo>\n"
+    contenido += f"<descripcion>{presentacion.descripcion}</descripcion>\n"
+    contenido += "<diapositivas>\n"
+    for diapositiva in presentacion.diapositiva_set.all():
+        contenido += f"\t<diapositiva>{diapositiva.contenido}</diapositiva>\n"
+    
+    # Escribir en el archivo
+    with open(ruta_archivo, 'w') as archivo:
+        archivo.write(contenido)

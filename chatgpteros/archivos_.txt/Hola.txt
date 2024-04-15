@@ -1,0 +1,7 @@
+<titulo>Hola</titulo>
+<descripcion>Adios</descripcion>
+<diapositivas>
+	<diapositiva>1</diapositiva>
+	<diapositiva>2</diapositiva>
+	<diapositiva>3</diapositiva>
+	<diapositiva>4</diapositiva>

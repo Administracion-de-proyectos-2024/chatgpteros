@@ -13,7 +13,7 @@
     <ul>
         {% for presentacion in presentaciones %}
             <li>
-                <a href="{% url 'detalle_presentacion' presentacion.pk %}">{{ presentacion.nombre }}</a>
+                <a href="#" onclick="openFullScreen('{{ presentacion.nombre }}', '{{ presentacion.descripcion }}', {{ presentacion.pk }})">{{ presentacion.nombre }}</a>
                 {% if user.is_superuser %}
                     <a href="{% url 'editar_presentacion' presentacion.pk %}">Editar</a>
                     <a href="{% url 'eliminar_presentacion' presentacion.pk %}">Eliminar</a>
@@ -24,6 +24,14 @@
     {% if user.is_superuser %}
         <a href="{% url 'nueva_presentacion' %}">Crear Nueva Presentación</a>
     {% endif %}
+
+    <script>
+        function openFullScreen(nombre, descripcion, pk) {
+            var newWindow = window.open('', '_blank', 'fullscreen=yes');
+            // Redirigir la ventana a la URL de detalle de presentación
+            newWindow.location.href = "{% url 'detalle_presentacion' 9999999 %}".replace('9999999', pk);
+        }
+    </script>
 </body>
 </html>
 {% endblock %}
