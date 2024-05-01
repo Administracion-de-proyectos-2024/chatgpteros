@@ -126,7 +126,7 @@ def eliminar_presentacion(request, pk):
     
     if request.method == 'POST':
         # Ruta del directorio donde se guardan los archivos
-        ruta_directorio  = os.path.join(BASE_DIR, 'chatgpteros', 'archivos_.txt')
+        ruta_directorio  = os.path.join(BASE_DIR, 'archivos_.txt')
         
         # Ruta completa del archivo
         ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
@@ -147,7 +147,7 @@ def generar_archivo_presentacion(presentacion):
     nombre_archivo = f"{presentacion.nombre}.txt"
     
     # Ruta del directorio donde deseas guardar los archivos
-    ruta_directorio  = os.path.join(BASE_DIR, 'chatgpteros', 'archivos_.txt')
+    ruta_directorio  = os.path.join(BASE_DIR, 'archivos_.txt')
 
     # Si la ruta no existe, crea el directorio
     if not os.path.exists(ruta_directorio):
