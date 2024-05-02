@@ -3,13 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm, DiapositivaFormSet, PresentacionForm
 from .models import Diapositiva, Presentacion
-from .forms import CustomUserCreationForm, DiapositivaForm
+from .forms import CustomUserCreationForm
 from .models import Diapositiva
-import markdown
-from django.http import HttpResponse
 import os
 from chatgpteros.settings import BASE_DIR
-from markdown2 import markdown
 
 def home(request):  
     return render(request, 'core/home.html')
@@ -78,20 +75,19 @@ def detalle_presentacion(request, pk):
     # Leer el archivo
     with open(ruta_archivo, 'r') as archivo:
         contenido = archivo.read()
-    
+
     # Dividir el contenido en líneas
     lineas = contenido.split('\n')
     
     # Extraer el nombre y la descripción de la presentación
-    nombre = lineas[0].replace('<titulo>', '').replace('</titulo>', '')
-    descripcion = lineas[1].replace('<descripcion>', '').replace('</descripcion>', '')
-    
+    nombre = lineas[0].replace('# ', '')
+    descripcion = lineas[1].replace('**', '')
+
     # Extraer las diapositivas
     diapositivas = []
     for linea in lineas[2:]:
-        if '<diapositiva>' in linea and '</diapositiva>' in linea:
-            diapositiva = linea.replace('<diapositiva>', '').replace('</diapositiva>', '')
-            diapositivas.append(diapositiva)
+        if linea:
+            diapositivas.append(linea)
     
     return render(request, 'pre/detalle_presentacion.html', {'nombre': nombre, 'descripcion': descripcion, 'diapositivas': diapositivas})
 
