@@ -9,7 +9,7 @@ import markdown
 from django.http import HttpResponse
 import os
 from chatgpteros.settings import BASE_DIR
-
+from markdown2 import markdown
 
 def home(request):  
     return render(request, 'core/home.html')
@@ -157,13 +157,11 @@ def generar_archivo_presentacion(presentacion):
     ruta_archivo = os.path.join(ruta_directorio, nombre_archivo)
     
     # Contenido del archivo
-    contenido = f"<titulo>{presentacion.nombre}</titulo>\n"
-    contenido += f"<descripcion>{presentacion.descripcion}</descripcion>\n"
-    contenido += "<diapositivas>\n"
+    contenido = f"# {presentacion.nombre}\n"
+    contenido += f"**{presentacion.descripcion}**"
     for diapositiva in presentacion.diapositiva_set.all():
-        contenido += f"\t<diapositiva>{diapositiva.contenido}</diapositiva>\n"
-    
+        contenido += f"\n{diapositiva.contenido}\n"
+
     # Escribir en el archivo
-    with open(ruta_archivo, 'w') as archivo:
+    with open(ruta_archivo, 'w', encoding='utf-8') as archivo:
         archivo.write(contenido)
-        
