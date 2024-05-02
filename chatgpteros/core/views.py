@@ -3,12 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm, DiapositivaFormSet, PresentacionForm
 from .models import Diapositiva, Presentacion
-from .forms import CustomUserCreationForm, DiapositivaForm
+from .forms import CustomUserCreationForm
 from .models import Diapositiva
-import markdown
-from django.http import HttpResponse
 import os
-
+from chatgpteros.settings import BASE_DIR
 
 def home(request):  
     return render(request, 'core/home.html')
@@ -69,28 +67,27 @@ def detalle_presentacion(request, pk):
     presentacion = Presentacion.objects.get(pk=pk)
     
     # Ruta del directorio donde se guardan los archivos
-    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
-    
+    ruta_directorio  = os.path.join(BASE_DIR, 'archivos_.txt')
+
     # Ruta completa del archivo
     ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
     
     # Leer el archivo
     with open(ruta_archivo, 'r') as archivo:
         contenido = archivo.read()
-    
+
     # Dividir el contenido en líneas
     lineas = contenido.split('\n')
     
     # Extraer el nombre y la descripción de la presentación
-    nombre = lineas[0].replace('<titulo>', '').replace('</titulo>', '')
-    descripcion = lineas[1].replace('<descripcion>', '').replace('</descripcion>', '')
-    
+    nombre = lineas[0].replace('# ', '')
+    descripcion = lineas[1].replace('**', '')
+
     # Extraer las diapositivas
     diapositivas = []
     for linea in lineas[2:]:
-        if '<diapositiva>' in linea and '</diapositiva>' in linea:
-            diapositiva = linea.replace('<diapositiva>', '').replace('</diapositiva>', '')
-            diapositivas.append(diapositiva)
+        if linea:
+            diapositivas.append(linea)
     
     return render(request, 'pre/detalle_presentacion.html', {'nombre': nombre, 'descripcion': descripcion, 'diapositivas': diapositivas})
 
@@ -125,7 +122,7 @@ def eliminar_presentacion(request, pk):
     
     if request.method == 'POST':
         # Ruta del directorio donde se guardan los archivos
-        ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+        ruta_directorio  = os.path.join(BASE_DIR, 'archivos_.txt')
         
         # Ruta completa del archivo
         ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
@@ -146,9 +143,8 @@ def generar_archivo_presentacion(presentacion):
     nombre_archivo = f"{presentacion.nombre}.txt"
     
     # Ruta del directorio donde deseas guardar los archivos
-    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+    ruta_directorio  = os.path.join(BASE_DIR, 'archivos_.txt')
 
-    
     # Si la ruta no existe, crea el directorio
     if not os.path.exists(ruta_directorio):
         os.makedirs(ruta_directorio)
@@ -157,13 +153,11 @@ def generar_archivo_presentacion(presentacion):
     ruta_archivo = os.path.join(ruta_directorio, nombre_archivo)
     
     # Contenido del archivo
-    contenido = f"<titulo>{presentacion.nombre}</titulo>\n"
-    contenido += f"<descripcion>{presentacion.descripcion}</descripcion>\n"
-    contenido += "<diapositivas>\n"
+    contenido = f"# {presentacion.nombre}\n"
+    contenido += f"**{presentacion.descripcion}**"
     for diapositiva in presentacion.diapositiva_set.all():
-        contenido += f"\t<diapositiva>{diapositiva.contenido}</diapositiva>\n"
-    
+        contenido += f"\n{diapositiva.contenido}\n"
+
     # Escribir en el archivo
-    with open(ruta_archivo, 'w') as archivo:
+    with open(ruta_archivo, 'w', encoding='utf-8') as archivo:
         archivo.write(contenido)
-        
