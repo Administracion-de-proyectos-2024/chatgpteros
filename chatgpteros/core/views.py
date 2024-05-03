@@ -3,10 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm, DiapositivaFormSet, PresentacionForm
 from .models import Diapositiva, Presentacion
-from .forms import CustomUserCreationForm, DiapositivaForm
+from .forms import CustomUserCreationForm
 from .models import Diapositiva
-import markdown
-from django.http import HttpResponse
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,8 +28,6 @@ def register(request):
 
     return render(request,'registration/register.html', data)
 
-
-"____________________________________________________________________________________________"
 
 @login_required
 def presentaciones_disponibles(request):
@@ -78,20 +74,19 @@ def detalle_presentacion(request, pk):
     # Leer el archivo
     with open(ruta_archivo, 'r') as archivo:
         contenido = archivo.read()
-    
+
     # Dividir el contenido en líneas
     lineas = contenido.split('\n')
     
     # Extraer el nombre y la descripción de la presentación
-    nombre = lineas[0].replace('<titulo>', '').replace('</titulo>', '')
-    descripcion = lineas[1].replace('<descripcion>', '').replace('</descripcion>', '')
-    
+    nombre = lineas[0].replace('# ', '')
+    descripcion = lineas[1].replace('**', '')
+
     # Extraer las diapositivas
     diapositivas = []
     for linea in lineas[2:]:
-        if '<diapositiva>' in linea and '</diapositiva>' in linea:
-            diapositiva = linea.replace('<diapositiva>', '').replace('</diapositiva>', '')
-            diapositivas.append(diapositiva)
+        if linea:
+            diapositivas.append(linea)
     
     return render(request, 'pre/detalle_presentacion.html', {'nombre': nombre, 'descripcion': descripcion, 'diapositivas': diapositivas})
 
@@ -164,9 +159,8 @@ def generar_archivo_presentacion(presentacion):
     ruta_archivo2 = os.path.join(ruta_directorio2, nombre_archivo2)
     
     # Contenido del archivo
-    contenido = f"<titulo>{presentacion.nombre}</titulo>\n"
-    contenido += f"<descripcion>{presentacion.descripcion}</descripcion>\n"
-    contenido += "<diapositivas>\n"
+    contenido = f"# {presentacion.nombre}\n"
+    contenido += f"**{presentacion.descripcion}**"
     for diapositiva in presentacion.diapositiva_set.all():
         contenido += f"\t<diapositiva>{diapositiva.contenido}</diapositiva>\n"
     
@@ -175,7 +169,7 @@ def generar_archivo_presentacion(presentacion):
     for diapositiva2 in presentacion.diapositiva_set.all():
         contenido2 += f"\\newpage {diapositiva2.contenido}\n"    
     # Escribir en el archivo
-    with open(ruta_archivo, 'w') as archivo:
+    with open(ruta_archivo, 'w', encoding='utf-8') as archivo:
         archivo.write(contenido)
         
     with open(ruta_archivo2, 'w') as archivo:
