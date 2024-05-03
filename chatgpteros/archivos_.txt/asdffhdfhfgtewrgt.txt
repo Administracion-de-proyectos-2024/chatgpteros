@@ -1,0 +1,6 @@
+<titulo>asdffhdfhfgtewrgt</titulo>
+<descripcion>asdasfdfdgr</descripcion>
+<diapositivas>
+	<diapositiva>gdfgsdfsdf</diapositiva>
+	<diapositiva>sdgsdfsdfsd</diapositiva>
+	<diapositiva>sdgsdgsdgsdgs</diapositiva>

@@ -9,6 +9,7 @@ import markdown
 from django.http import HttpResponse
 import os
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def home(request):  
     return render(request, 'core/home.html')
@@ -69,7 +70,7 @@ def detalle_presentacion(request, pk):
     presentacion = Presentacion.objects.get(pk=pk)
     
     # Ruta del directorio donde se guardan los archivos
-    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+    ruta_directorio  = os.path.join(BASE_DIR, "archivos_.txt")
     
     # Ruta completa del archivo
     ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
@@ -125,7 +126,7 @@ def eliminar_presentacion(request, pk):
     
     if request.method == 'POST':
         # Ruta del directorio donde se guardan los archivos
-        ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+        ruta_directorio  = os.path.join(BASE_DIR, "archivos_.txt")
         
         # Ruta completa del archivo
         ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
@@ -144,17 +145,23 @@ def eliminar_presentacion(request, pk):
 def generar_archivo_presentacion(presentacion):
     # Nombre del archivo
     nombre_archivo = f"{presentacion.nombre}.txt"
+    nombre_archivo2 = f"{presentacion.nombre}.md"
     
     # Ruta del directorio donde deseas guardar los archivos
-    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+    ruta_directorio  = os.path.join(BASE_DIR, "archivos_.txt")
+    ruta_directorio2  = os.path.join(BASE_DIR, "archivos_.md")
 
     
     # Si la ruta no existe, crea el directorio
     if not os.path.exists(ruta_directorio):
         os.makedirs(ruta_directorio)
+
+    if not os.path.exists(ruta_directorio2):
+        os.makedirs(ruta_directorio2)
     
     # Ruta completa del archivo
     ruta_archivo = os.path.join(ruta_directorio, nombre_archivo)
+    ruta_archivo2 = os.path.join(ruta_directorio2, nombre_archivo2)
     
     # Contenido del archivo
     contenido = f"<titulo>{presentacion.nombre}</titulo>\n"
@@ -163,7 +170,13 @@ def generar_archivo_presentacion(presentacion):
     for diapositiva in presentacion.diapositiva_set.all():
         contenido += f"\t<diapositiva>{diapositiva.contenido}</diapositiva>\n"
     
+    contenido2 = f"# {presentacion.nombre}\n"
+    contenido2 += f"##{presentacion.descripcion}\n"
+    for diapositiva2 in presentacion.diapositiva_set.all():
+        contenido2 += f"\\newpage {diapositiva2.contenido}\n"    
     # Escribir en el archivo
     with open(ruta_archivo, 'w') as archivo:
         archivo.write(contenido)
         
+    with open(ruta_archivo2, 'w') as archivo:
+        archivo.write(contenido2)        
