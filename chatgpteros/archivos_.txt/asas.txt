@@ -1,6 +1,6 @@
 <titulo>asas</titulo>
 <descripcion>asas</descripcion>
 <diapositivas>
-	<diapositiva>Erik</diapositiva>
+	<diapositiva>Carlos</diapositiva>
 	<diapositiva>asass</diapositiva>
 	<diapositiva>assas</diapositiva>

@@ -69,7 +69,7 @@ def detalle_presentacion(request, pk):
     presentacion = Presentacion.objects.get(pk=pk)
     
     # Ruta del directorio donde se guardan los archivos
-    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+    ruta_directorio  = 'C:\\Users\\jocka\\chatgpteros\\chatgpteros\\chatgpteros\\archivos_.txt'
     
     # Ruta completa del archivo
     ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
@@ -125,7 +125,7 @@ def eliminar_presentacion(request, pk):
     
     if request.method == 'POST':
         # Ruta del directorio donde se guardan los archivos
-        ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+        ruta_directorio  = 'C:\\Users\\jocka\\chatgpteros\\chatgpteros\\chatgpteros\\archivos_.txt'
         
         # Ruta completa del archivo
         ruta_archivo = os.path.join(ruta_directorio, f"{presentacion.nombre}.txt")
@@ -146,7 +146,7 @@ def generar_archivo_presentacion(presentacion):
     nombre_archivo = f"{presentacion.nombre}.txt"
     
     # Ruta del directorio donde deseas guardar los archivos
-    ruta_directorio  = 'C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\'
+    ruta_directorio  = 'C:\\Users\\jocka\\chatgpteros\\chatgpteros\\chatgpteros\\archivos_.txt'
 
     
     # Si la ruta no existe, crea el directorio

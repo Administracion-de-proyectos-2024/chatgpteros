@@ -1,0 +1,7 @@
+<titulo>Prueba 2</titulo>
+<descripcion>Probando sistema desde txt.</descripcion>
+<diapositivas>
+	<diapositiva>1</diapositiva>
+	<diapositiva>2</diapositiva>
+	<diapositiva>3</diapositiva>
+	<diapositiva>CAMBIANDO CONTENIDO DESDE TXT</diapositiva>
