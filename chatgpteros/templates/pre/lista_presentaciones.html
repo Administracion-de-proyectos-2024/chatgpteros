@@ -12,17 +12,20 @@
     <h1>Lista de Presentaciones</h1>
     <ul>
         {% for presentacion in presentaciones %}
-            <li>
-                <a href="#" onclick="openFullScreen('{{ presentacion.nombre }}', '{{ presentacion.descripcion }}', {{ presentacion.pk }})">{{ presentacion.nombre }}</a>
-                {% if user.is_superuser %}
-                    <a href="{% url 'editar_presentacion' presentacion.pk %}">Editar</a>
-                    <a href="{% url 'eliminar_presentacion' presentacion.pk %}">Eliminar</a>
-                {% endif %}
-            </li>
+        <li>
+            {% if presentacion.vista_previa %}
+            <img src="{{ presentacion.vista_previa.url }}" alt="Vista previa de {{ presentacion.nombre }}" style="width: 200px; height: auto;">
+            {% endif %}
+            <a href="#" onclick="openFullScreen('{{ presentacion.nombre|escapejs }}', '{{ presentacion.descripcion|escapejs }}', {{ presentacion.pk }})">{{ presentacion.nombre }}</a>
+            {% if user.is_superuser %}
+            <a href="{% url 'editar_presentacion' presentacion.pk %}">Editar</a>
+            <a href="{% url 'eliminar_presentacion' presentacion.pk %}">Eliminar</a>
+            {% endif %}
+        </li>
         {% endfor %}
     </ul>
     {% if user.is_superuser %}
-        <a href="{% url 'nueva_presentacion' %}">Crear Nueva Presentación</a>
+        <a href="{% url 'elegir_metodo_creacion' %}">Crear Nueva Presentación</a>
     {% endif %}
 
     <script>

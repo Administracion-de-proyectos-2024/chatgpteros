@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Presentación</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <style>
         /* Agrega este estilo para especificar un ancho fijo para los campos de texto */
         textarea {
@@ -18,15 +19,24 @@
     <h1>Nueva Presentación</h1>
     <form id="presentation-form" method="post">
         {% csrf_token %}
-        {{ presentacion_form.as_p }}
+        <label for="id_nombre">Titulo:</label>
+        {{ presentacion_form.nombre }}
+        <br> <!-- Agrega un salto de línea aquí -->
+        <label for="id_descripcion">Descripción:</label>
+        {{ presentacion_form.descripcion }}
         <fieldset id="diapositivas">
             <legend>Diapositivas</legend>
             {{ diapositiva_formset.management_form }}
             <div id="formset-container">
                 {% for form in diapositiva_formset %}
                     <div class="formset-row" id="formset-row-{{ forloop.counter0 }}">
-                        {{ form.as_p }}
-                        <!-- Omitir el campo "Eliminar" -->
+                        {{ form.subtitulo.errors }}
+                        <p><label for="id_diapositiva_set-{{ forloop.counter0 }}-subtitulo">Subtítulo (opcional):</label> {{ form.subtitulo }}</p>
+                        <!-- Deja solo el campo de texto de SimpleMDE -->
+                        <div class="editor-container">
+                            <label for="id_diapositiva_set-{{ forloop.counter0 }}-contenido">Contenido:</label>
+                            <textarea id="id_diapositiva_set-{{ forloop.counter0 }}-contenido" name="diapositiva_set-{{ forloop.counter0 }}-contenido" class="markdown-editor">{{ form.contenido.value }}</textarea>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -38,32 +48,41 @@
 
     <input type="hidden" id="id_form-TOTAL_FORMS" name="form-TOTAL_FORMS" value="{{ diapositiva_formset.total_form_count }}">
 
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var addButton = document.getElementById('agregar-diapositiva');
             var formset = document.getElementById('formset-container');
             var totalForms = document.getElementById('id_diapositiva_set-TOTAL_FORMS');
-
+    
             addButton.addEventListener('click', function() {
                 var formIndex = parseInt(totalForms.value); // Obtener el índice actual del formulario
-
+    
                 // Crear un nuevo formulario de diapositivas
                 var newForm = document.createElement('div');
                 newForm.className = 'formset-row';
                 newForm.innerHTML = `
-                    <p><label for="id_diapositiva_set-${formIndex}-contenido">Contenido:</label> <textarea id="id_diapositiva_set-${formIndex}-contenido" name="diapositiva_set-${formIndex}-contenido"></textarea></p>
-                    <!-- Agrega aquí cualquier otro campo que necesites en tu formulario de diapositivas -->
+                    <p><label for="id_diapositiva_set-${formIndex}-subtitulo">Subtítulo (opcional):</label> <input type="text" id="id_diapositiva_set-${formIndex}-subtitulo" name="diapositiva_set-${formIndex}-subtitulo"></p>
+                    <p><label for="id_diapositiva_set-${formIndex}-contenido">Contenido:</label> <textarea id="id_diapositiva_set-${formIndex}-contenido" name="diapositiva_set-${formIndex}-contenido" class="markdown-editor"></textarea></p>
                 `;
-
+    
                 formset.appendChild(newForm); // Agregar el nuevo formulario al DOM
-
+    
                 formIndex++;
                 totalForms.setAttribute('value', formIndex); // Actualizar el valor del contador de formularios
+
+                // Inicializar SimpleMDE para el nuevo campo de contenido
+                var newContentTextarea = newForm.querySelector('.markdown-editor');
+                new SimpleMDE({ element: newContentTextarea });
             });
         });
 
+        var existingContentTextareas = document.querySelectorAll('.markdown-editor');
+        existingContentTextareas.forEach(function(textarea) {
+            new SimpleMDE({ element: textarea });
+            textarea.removeAttribute('required');  // Agrega esta línea
+        });
     </script>
-        
 </body>
 </html>
 {% endblock %}

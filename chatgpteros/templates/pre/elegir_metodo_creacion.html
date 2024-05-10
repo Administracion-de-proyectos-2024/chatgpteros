@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Elegir método de creación</title>
+</head>
+<body>
+    <h1>Elegir método de creación</h1>
+    <a href="{% url 'subir_archivo' %}">Subir archivo</a>
+    <a href="{% url 'nueva_presentacion' %}">Crear manualmente</a>
+</body>
+</html>
+
+{% endblock %}

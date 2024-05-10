@@ -14,12 +14,18 @@ class PresentacionForm(forms.ModelForm):
     class Meta:
         model = Presentacion
         fields = ['nombre', 'descripcion']
+        widgets = {
+            'descripcion': forms.Textarea(attrs={'id': 'id_descripcion', 'class': 'markdown-editor'}),
+        }
 
 
 class DiapositivaForm(forms.ModelForm):
     class Meta:
         model = Diapositiva
-        fields = ['contenido']
+        fields = ['subtitulo','contenido']
+        widgets = {
+                'contenido': forms.Textarea(attrs={'id': 'id_contenido', 'class': 'markdown-editor'}),
+        }
 
 DiapositivaFormSet = forms.inlineformset_factory(Presentacion, Diapositiva, form=DiapositivaForm, extra=1, can_delete=False)
 
