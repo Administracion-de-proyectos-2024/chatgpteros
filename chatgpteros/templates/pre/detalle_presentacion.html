@@ -4,6 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de Presentación</title>
+    <style>
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: block;
+        }
+        .titulo-descripcion {
+            display: block;
+        }
+        .titulo-descripcion.hidden {
+            display: none;
+        }
+
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .navigation-buttons button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .navigation-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para el mensaje de no más diapositivas */
+        .no-more-slides {
+            display: none;
+            color: red;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 <body>
 <div class="content">
@@ -12,7 +64,7 @@
         <p>{{ descripcion }}</p>
     </div>
 
-    <!-- Contenedor de diapositivas -->
+    
     <div id="slides">
         {% if diapositivas %}
             {% for diapositiva in diapositivas %}
@@ -22,79 +74,83 @@
             <p>No hay diapositivas disponibles.</p>
         {% endif %}
     </div>
+
+    <!-- Mensaje de no más diapositivas -->
+    <p id="no-more-slides" class="no-more-slides">No hay más diapositivas para mostrar.</p>
+
+    <!-- Botones de Navegación -->
+    <div class="navigation-buttons">
+        <button id="anterior">Anterior</button>
+        <button id="siguiente">Siguiente</button>
+    </div>
 </div>
-</body>
-</html>
-
-<style>
-    .content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 50vh;
-        margin: 0;
-    }
-
-    .slide {
-        display: none;
-    }
-    .slide.active {
-        display: block;
-    }
-    .titulo-descripcion {
-        display: block;
-    }
-    .titulo-descripcion.hidden {
-        display: none;
-    }
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var slides = document.querySelectorAll(".slide");
         var totalSlides = slides.length;
-        var currentSlide = -1;  // Inicializa currentSlide a -1 para que la primera diapositiva se muestre cuando se presione la flecha derecha por primera vez
+        var currentSlide = -1;  
         var tituloDescripcion = document.getElementById('titulo-descripcion');
-    
+        var noMoreSlides = document.getElementById('no-more-slides');
+
         function showSlide(index) {
-            for (var i = 0; i < totalSlides; i++) {
-                slides[i].classList.remove("active");
+            if (index < -1 || index >= totalSlides) {
+                return;  
             }
-            if (index >= 0) {  // Solo muestra la diapositiva si index es mayor o igual a 0
+
+            
+            slides.forEach(slide => slide.classList.remove("active"));
+            noMoreSlides.style.display = 'none';
+
+            if (index >= 0) {
                 slides[index].classList.add("active");
                 currentSlide = index;
-                tituloDescripcion.classList.add("hidden");  // Oculta el título y la descripción cuando se muestra una diapositiva
+                tituloDescripcion.classList.add("hidden");
             } else {
-                tituloDescripcion.classList.remove("hidden");  // Muestra el título y la descripción cuando no se muestra ninguna diapositiva
+                tituloDescripcion.classList.remove("hidden");
             }
         }
-    
-        // Show the first slide on page load
+
+        
         showSlide(currentSlide);
-    
-        // Add events for keyboard arrows
+
+        // Eventos de teclado para avanzar y retroceder
         document.addEventListener('keydown', function(event) {
             if (event.key === 'ArrowLeft') {
-                currentSlide = currentSlide === 0 ? -1 : (currentSlide - 1 + totalSlides) % totalSlides;
-                showSlide(currentSlide);
+                if (currentSlide > 0) {
+                    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                    showSlide(currentSlide);
+                }
             } else if (event.key === 'ArrowRight') {
-                if (currentSlide === totalSlides - 1) {
-                    window.location.href = '/presentaciones/disponibles';  // Reemplaza esto con la URL de tu lista de presentaciones
-                    window.close();  // Intenta cerrar la ventana actual
-                } else {
+                if (currentSlide < totalSlides - 1) {
                     currentSlide = (currentSlide + 1) % totalSlides;
                     showSlide(currentSlide);
+                } else {
+                    // Mostrar el mensaje de no más diapositivas
+                    noMoreSlides.style.display = 'block';
                 }
             }
         });
-    
-        // Add event for next arrow click
+
+       
+        document.getElementById('anterior').addEventListener('click', function() {
+            if (currentSlide > 0) {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                showSlide(currentSlide);
+            }
+        });
+
         document.getElementById('siguiente').addEventListener('click', function() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            showSlide(currentSlide);
+            if (currentSlide < totalSlides - 1) {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                showSlide(currentSlide);
+            } else {
+                
+                noMoreSlides.style.display = 'block';
+            }
         });
     });
 </script>
 </body>
 </html>
+
