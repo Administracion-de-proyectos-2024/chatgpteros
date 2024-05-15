@@ -1,17 +1,14 @@
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm, DiapositivaFormSet, PresentacionForm
 from .models import Diapositiva, Presentacion
 from django.core.files.storage import FileSystemStorage
-from markdown.inlinepatterns import SimpleTagPattern
 from .models import Diapositiva
 import markdown
 import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from chatgpteros.settings import BASE_DIR
 
 def home(request):  
     return render(request, 'core/home.html')
@@ -83,8 +80,11 @@ def subir_archivo(request):
                 messages.error(request, 'El archivo no tiene el formato correcto. Por favor, asegúrate de que contiene las etiquetas correctas.')
                 return redirect('subir_archivo')
 
-            fs = FileSystemStorage(location='C:\\Users\\asael\\OneDrive\\Documentos\\Pc\\Escritorio\\ProyectoAdmin\\chatgpteros\\chatgpteros\\archivos_.txt\\')  # Especifica la ruta donde quieres guardar los archivos
-            nombre_archivo = fs.save(archivo.name, archivo)
+            ruta_directorio = os.path.join(BASE_DIR, "archivos_.md")
+            fs = FileSystemStorage(location=ruta_directorio)
+            nombre_simple  = archivo.name.rsplit('.', 1)[0]
+            nombre_wmd = nombre_simple + '.md'
+            nombre_archivo = fs.save(nombre_wmd, archivo)
             ruta_archivo = fs.path(nombre_archivo)
             
             # Aquí puedes llamar a la función que genera la presentación a partir del archivo
