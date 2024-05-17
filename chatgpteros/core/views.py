@@ -8,14 +8,12 @@ from django.core.files.storage import FileSystemStorage
 from .models import Diapositiva
 import markdown
 import os
-<<<<<<< HEAD
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-=======
+
 from chatgpteros.settings import BASE_DIR
->>>>>>> 74f43ab8a3b3a7b166924c4fdc1825323a73a737
 
 def home(request):  
     return render(request, 'core/home.html')
