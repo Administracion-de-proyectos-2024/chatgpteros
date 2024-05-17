@@ -27,6 +27,6 @@ class DiapositivaForm(forms.ModelForm):
                 'contenido': forms.Textarea(attrs={'id': 'id_contenido', 'class': 'markdown-editor'}),
         }
 
-DiapositivaFormSet = forms.inlineformset_factory(Presentacion, Diapositiva, form=DiapositivaForm, extra=1, can_delete=False)
+DiapositivaFormSet = forms.inlineformset_factory(Presentacion, Diapositiva, form=DiapositivaForm, extra=0, can_delete=False)
 
 

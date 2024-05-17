@@ -9,80 +9,285 @@
     <title>Nueva Presentación</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <style>
-        /* Agrega este estilo para especificar un ancho fijo para los campos de texto */
+        .navbar {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .editor, .preview {
+            flex-basis: calc(50% - 20px);
+        }
+
+        .editor {
+            order: 2;
+        }
+
+        .preview {
+            order: 1;
+        }
+
+        .preview-section {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
         textarea {
-            width: 500px;  /* Ajusta este valor según tus necesidades */
+            width: 100%;
+        }
+
+        .formset-row {
+            margin-bottom: 20px;
+        }
+
+        .formset-row .editor-container {
+            margin-bottom: 20px;
+        }
+
+        .formset-row textarea {
+            height: 200px;
+        }
+        .diapositiva {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            width: 90%;
+            border-radius: 5px;
+        }
+
+        .diapositiva:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
-    <h1>Nueva Presentación</h1>
-    <form id="presentation-form" method="post">
-        {% csrf_token %}
-        <label for="id_nombre">Titulo:</label>
-        {{ presentacion_form.nombre }}
-        <br> <!-- Agrega un salto de línea aquí -->
-        <label for="id_descripcion">Descripción:</label>
-        {{ presentacion_form.descripcion }}
-        <fieldset id="diapositivas">
-            <legend>Diapositivas</legend>
-            {{ diapositiva_formset.management_form }}
-            <div id="formset-container">
-                {% for form in diapositiva_formset %}
-                    <div class="formset-row" id="formset-row-{{ forloop.counter0 }}">
-                        {{ form.subtitulo.errors }}
-                        <p><label for="id_diapositiva_set-{{ forloop.counter0 }}-subtitulo">Subtítulo (opcional):</label> {{ form.subtitulo }}</p>
-                        <!-- Deja solo el campo de texto de SimpleMDE -->
-                        <div class="editor-container">
-                            <label for="id_diapositiva_set-{{ forloop.counter0 }}-contenido">Contenido:</label>
-                            <textarea id="id_diapositiva_set-{{ forloop.counter0 }}-contenido" name="diapositiva_set-{{ forloop.counter0 }}-contenido" class="markdown-editor">{{ form.contenido.value }}</textarea>
-                        </div>
-                    </div>
-                {% endfor %}
+    <div class="container">
+        <div class="preview">
+            <h1>Vista Previa</h1>
+            <div class = "diapositiva" id="vista-previa">
+                <div id="presentation-details">
+                    <!-- Aquí se mostrará el título -->
+                </div>
+                <div id="description-details">
+                    <!-- Aquí se mostrará la descripción -->
+                </div>
             </div>
-            <!-- Mover el botón dentro del fieldset -->
-            <button type="button" id="agregar-diapositiva">Agregar Diapositiva</button>
-        </fieldset>
-        <button type="submit">Guardar</button>
-    </form>
+        </div>
+        
 
-    <input type="hidden" id="id_form-TOTAL_FORMS" name="form-TOTAL_FORMS" value="{{ diapositiva_formset.total_form_count }}">
+        <div class="editor">
+            <h1>Nueva Presentación</h1>
+            <form id="presentation-form" method="post" name="myform" novalidate>
+                {% csrf_token %}
+                <label for="id_nombre">Titulo:</label>
+                {{ presentacion_form.nombre }}
+                <br>
+                <label for="id_descripcion">Descripción:</label>
+                {{ presentacion_form.descripcion }}
+                <fieldset id="diapositivas">
+                    <legend>Diapositivas</legend>
+                    {{ diapositiva_formset.management_form }}
+                    <div id="formset-container">
+                        {% for form in diapositiva_formset %}
+                            <div class="formset-row" id="formset-row-{{ forloop.counter0 }}">
+                                <div class="editor-container">
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" id="agregar-diapositiva">Agregar Diapositiva</button>
+                </fieldset>
+                <button type="submit">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <input type="hidden" id="id_diapositiva_set-TOTAL_FORMS" name="diapositiva_set-TOTAL_FORMS" value="{{ diapositiva_formset.total_form_count }}">
 
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var addButton = document.getElementById('agregar-diapositiva');
             var formset = document.getElementById('formset-container');
             var totalForms = document.getElementById('id_diapositiva_set-TOTAL_FORMS');
+            var titleDescriptionShown = false;
+            var descripcionTextarea = document.getElementById('id_descripcion');
+            var descripcionEditor = new SimpleMDE({ element: descripcionTextarea });
+            var converter = new showdown.Converter();
+
+            descripcionEditor.codemirror.on("change", function() {
+                var titulo = document.getElementById('id_nombre').value;
+                var descripcion = converter.makeHtml(descripcionEditor.value());
+                var presentationDetails = document.getElementById('presentation-details');
+                var descriptionDetails = document.getElementById('description-details');
+                if (presentationDetails && descriptionDetails) {
+                    presentationDetails.innerHTML = `<h1>${titulo}</h1>`;
+                    descriptionDetails.innerHTML = `<p>${descripcion}</p>`;
+                }
+                // Actualizar la vista previa de todas las diapositivas
+                updateAllSlidePreviews();
+            });
+
+            document.getElementById('id_nombre').addEventListener('input', function() {
+                var titulo = this.value;
+                var descripcion = document.getElementById('id_descripcion').value;
+                var presentationDetails = document.getElementById('presentation-details');
+                if (presentationDetails) {
+                    presentationDetails.innerHTML = `<h1>${titulo}</h1>`;
+                }
+                // Actualizar la vista previa de todas las diapositivas
+                updateAllSlidePreviews();
+            });
+
+            document.getElementById('id_descripcion').addEventListener('input', function() {
+                var titulo = document.getElementById('id_nombre').value;
+                var descripcion = this.value;
+                var descriptionDetails = document.getElementById('description-details');
+                if (descriptionDetails) {
+                    descriptionDetails.innerHTML = `<p>${descripcion}</p>`;
+                }
+                // Actualizar la vista previa de todas las diapositivas
+                updateAllSlidePreviews();
+            });
+
+            function updateAllSlidePreviews() {
+                var existingContentTextareas = document.querySelectorAll('.markdown-editor');
+                existingContentTextareas.forEach(function(textarea, index) {
+                    
+                    var contenido = textarea.value;
+                    updateSlidePreview(
+                        document.getElementById('id_nombre').value,
+                        subtitulo,
+                        contenido,
+                        index
+                    );
+                });
+            }
+
+            var initializeMarkdownEditor = function(textarea, index) {
+                    var simplemde = new SimpleMDE({ element: textarea });
+                    textarea.removeAttribute('required');
+                    
+                    // Evento de cambio en el editor Markdown
+                simplemde.codemirror.on("change", function() {
+                    var titulo = document.getElementById('id_nombre').value;
+                    var descripcion = document.getElementById('id_descripcion').value;
+                    var subtitulo = document.getElementById(`id_diapositiva_set-${index}-subtitulo`).value;
+                    var contenido = simplemde.value();
+                    updateSlidePreview(titulo, descripcion, subtitulo, contenido, index);
+                });
+                
+                // Evento de entrada en el campo de subtítulo
+                document.getElementById(`id_diapositiva_set-${index}-subtitulo`).addEventListener('input', function() {
+                    var titulo = document.getElementById('id_nombre').value;
+                    var descripcion = document.getElementById('id_descripcion').value;
+                    var subtitulo = this.value;
+                    var contenido = simplemde.value();
+                    updateSlidePreview(titulo, descripcion, subtitulo, contenido, index);
+                });
+                
+                // Evento de entrada en el campo de contenido
+                textarea.addEventListener('input', function() {
+                    var titulo = document.getElementById('id_nombre').value;
+                    var descripcion = document.getElementById('id_descripcion').value;
+                    var subtitulo = document.getElementById(`id_diapositiva_set-${index}-subtitulo`).value;
+                    var contenido = this.value;
+                    updateSlidePreview(titulo, descripcion, subtitulo, contenido, index);
+                });
+            };
+
+            var updateSlidePreview = function(titulo, descripcion, subtitulo, contenido, index) {
+                var formData = new FormData();
+                formData.append('titulo', titulo);
+                formData.append('subtitulo', subtitulo);
+                formData.append('contenido', converter.makeHtml(contenido));
+
+                fetch("{% url 'render_slide' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    var slidePreviewId = index === -1 ? 'presentation-preview' : 'slide-preview-' + index;
+                    var slidePreview = document.getElementById(slidePreviewId);
+                    if (!slidePreview) {  // Verificar si la diapositiva no existe
+                        slidePreview = document.createElement('div');
+                        slidePreview.id = slidePreviewId;
+                        document.getElementById('vista-previa').appendChild(slidePreview);
+                    }
+                    // Vaciar completamente el contenido antes de agregar el nuevo contenido
+                    slidePreview.innerHTML = '';
+                    // Agregar el nuevo contenido
+                    slidePreview.innerHTML = html;
+                })
+                .catch(error => console.error('Error:', error));
+            };
+
+
     
             addButton.addEventListener('click', function() {
-                var formIndex = parseInt(totalForms.value); // Obtener el índice actual del formulario
-    
-                // Crear un nuevo formulario de diapositivas
+                var formIndex = parseInt(totalForms.value);
+
                 var newForm = document.createElement('div');
                 newForm.className = 'formset-row';
                 newForm.innerHTML = `
-                    <p><label for="id_diapositiva_set-${formIndex}-subtitulo">Subtítulo (opcional):</label> <input type="text" id="id_diapositiva_set-${formIndex}-subtitulo" name="diapositiva_set-${formIndex}-subtitulo"></p>
-                    <p><label for="id_diapositiva_set-${formIndex}-contenido">Contenido:</label> <textarea id="id_diapositiva_set-${formIndex}-contenido" name="diapositiva_set-${formIndex}-contenido" class="markdown-editor"></textarea></p>
+                    <div class="editor-container">
+                        <p><label for="id_diapositiva_set-${formIndex}-subtitulo">Subtítulo (opcional):</label> <input type="text" id="id_diapositiva_set-${formIndex}-subtitulo" name="diapositiva_set-${formIndex}-subtitulo"></p>
+                        <p><label for="id_diapositiva_set-${formIndex}-contenido">Contenido:</label> <textarea id="id_diapositiva_set-${formIndex}-contenido" name="diapositiva_set-${formIndex}-contenido" class="markdown-editor"></textarea></p>
+                    </div>
                 `;
-    
-                formset.appendChild(newForm); // Agregar el nuevo formulario al DOM
-    
-                formIndex++;
-                totalForms.setAttribute('value', formIndex); // Actualizar el valor del contador de formularios
 
-                // Inicializar SimpleMDE para el nuevo campo de contenido
+                formset.appendChild(newForm);
+
                 var newContentTextarea = newForm.querySelector('.markdown-editor');
-                new SimpleMDE({ element: newContentTextarea });
+                initializeMarkdownEditor(newContentTextarea, formIndex);
+
+                formIndex++;
+                totalForms.setAttribute('value', formIndex);
+            });
+
+            // Mover la inicialización de los editores Markdown y la configuración de los eventos de entrada aquí
+            var existingContentTextareas = document.querySelectorAll('.markdown-editor');
+            existingContentTextareas.forEach(function(textarea, index) {
+                if (textarea.value === 'None') {
+                    textarea.value = '';
+                }
+                var subtitulo = document.getElementById(`id_diapositiva_set-${index}-subtitulo`).value;
+                var contenido = textarea.value;
+                initializeMarkdownEditor(textarea, index);
+                updateSlidePreview(
+                    document.getElementById('id_nombre').value,
+                    document.getElementById('id_descripcion').value,
+                    subtitulo,
+                    contenido,
+                    index
+                );
             });
         });
-
-        var existingContentTextareas = document.querySelectorAll('.markdown-editor');
-        existingContentTextareas.forEach(function(textarea) {
-            new SimpleMDE({ element: textarea });
-            textarea.removeAttribute('required');  // Agrega esta línea
-        });
     </script>
+    
 </body>
 </html>
 {% endblock %}

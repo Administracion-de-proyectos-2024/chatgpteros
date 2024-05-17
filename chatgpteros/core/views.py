@@ -1,15 +1,15 @@
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm, DiapositivaFormSet, PresentacionForm
 from .models import Diapositiva, Presentacion
 from django.core.files.storage import FileSystemStorage
-from markdown.inlinepatterns import SimpleTagPattern
 from .models import Diapositiva
 import markdown
 import os
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,6 +42,9 @@ def presentaciones_disponibles(request):
 
 @login_required
 def nueva_presentacion(request):
+    titulo = ''
+    descripcion = ''
+    
     if request.method == 'POST':
         presentacion_form = PresentacionForm(request.POST)
         diapositiva_formset = DiapositivaFormSet(request.POST)
@@ -57,6 +60,10 @@ def nueva_presentacion(request):
             # Llamar a la función para generar el archivo de texto
             generar_archivo_presentacion(presentacion)
             
+            # Obtener los valores del título y la descripción después de guardar la presentación
+            titulo = presentacion.nombre
+            descripcion = presentacion.descripcion
+
             return redirect('presentaciones_disponibles')
     else:
         presentacion_form = PresentacionForm()
@@ -64,7 +71,9 @@ def nueva_presentacion(request):
     
     return render(request, 'pre/nueva_presentacion.html', {
         'presentacion_form': presentacion_form,
-        'diapositiva_formset': diapositiva_formset
+        'diapositiva_formset': diapositiva_formset,
+        'titulo': titulo,  # Pasar el título al contexto de la plantilla
+        'descripcion': descripcion,  # Pasar la descripción al contexto de la plantilla
     })
 
 
@@ -99,7 +108,7 @@ def subir_archivo(request):
 
 def validar_etiquetas(contenido):
     # Lista de las etiquetas que deben estar en el archivo
-    etiquetas = ['# ', '## ', '####']
+    etiquetas = ['#', '##', '###']
 
     # Verifica si cada etiqueta está en el contenido del archivo
     for etiqueta in etiquetas:
@@ -108,7 +117,6 @@ def validar_etiquetas(contenido):
             return False
 
     return True
-
 
 
 def generar_presentacion_desde_archivo(ruta_archivo, nombre_archivo):
@@ -137,8 +145,6 @@ def generar_presentacion_desde_archivo(ruta_archivo, nombre_archivo):
         # Crea un nuevo objeto Diapositiva para cada diapositiva en el archivo
         for diapositiva in diapositivas:
             Diapositiva.objects.create(nombre=nombre, contenido=diapositiva['contenido'], presentacion=presentacion)
-
-
 
 
 @login_required
@@ -204,10 +210,20 @@ def detalle_presentacion(request, pk):
         descripcion = presentacion.descripcion
         diapositivas = Diapositiva.objects.filter(presentacion=presentacion)
         return render(request, 'pre/detalle_presentacion.html', {'nombre': nombre, 'descripcion': descripcion, 'diapositivas': diapositivas})
-
-
     
 
+def render_slide(request):
+    if request.method == 'POST':
+        subtitulo = request.POST.get('subtitulo', '')
+        contenido = request.POST.get('contenido', '')
+        titulo = request.POST.get('titulo', '')  # Obtener el título de la presentación
+        descripcion = request.POST.get('descripcion', '')  # Obtener la descripción de la presentación
+        diapositiva = Diapositiva(subtitulo=subtitulo, contenido=contenido)
+        return render(request, 'pre/slide_detail.html', {'diapositiva': diapositiva, 'titulo': titulo, 'descripcion': descripcion})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@login_required
 def editar_presentacion(request, pk):
     presentacion = get_object_or_404(Presentacion, pk=pk)
     
@@ -228,6 +244,7 @@ def editar_presentacion(request, pk):
         diapositiva_formset = DiapositivaFormSet(instance=presentacion)
     
     return render(request, 'pre/editar_presentacion.html', {'presentacion_form': presentacion_form, 'diapositiva_formset': diapositiva_formset})
+
 
 
 def guardar_presentacion(presentacion):
@@ -253,8 +270,6 @@ def guardar_presentacion(presentacion):
             archivo.write('</diapositivas>\n')
     else:
         print("No hay un archivo asociado con la presentación", presentacion.nombre)
-
-
 
 
 def eliminar_presentacion(request, pk):

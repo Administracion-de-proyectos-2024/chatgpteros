@@ -15,5 +15,3 @@ class Diapositiva(models.Model):
     subtitulo = models.CharField(max_length=200, blank=True, null=True)
     presentacion = models.ForeignKey(Presentacion, on_delete=models.CASCADE)
     contenido = models.TextField()
-
-

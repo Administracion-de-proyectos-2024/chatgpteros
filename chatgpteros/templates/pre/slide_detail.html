@@ -1,0 +1,24 @@
+<style>
+    .diapositiva2 {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            width: 90%;
+            border-radius: 5px;
+    }
+
+    .diapositiva2:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+</style>
+
+
+<div class = "diapositiva2">
+    {% if diapositiva.subtitulo %}
+        <h2>{{ diapositiva.subtitulo }}</h2>
+    {% endif %}
+    <div>{{ diapositiva.contenido|safe }}</div>
+</div>

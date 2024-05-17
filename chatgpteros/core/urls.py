@@ -15,5 +15,6 @@ urlpatterns = [
     
     path('presentacion/<int:pk>/editar/', views.editar_presentacion, name='editar_presentacion'),
     path('presentacion/<int:pk>/eliminar/', views.eliminar_presentacion, name='eliminar_presentacion'),
+    path('render_slide/', views.render_slide, name='render_slide'),
 ]
 
