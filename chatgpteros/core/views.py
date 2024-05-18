@@ -9,11 +9,10 @@ from .models import Diapositiva
 import markdown
 import os
 from django.http import JsonResponse
-from django.template.loader import render_to_string
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from chatgpteros.settings import BASE_DIR
+
 
 def home(request):  
     return render(request, 'core/home.html')
