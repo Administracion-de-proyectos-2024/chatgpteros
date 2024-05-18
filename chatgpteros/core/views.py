@@ -6,8 +6,8 @@ from .models import Diapositiva, Presentacion
 from .forms import CustomUserCreationForm
 from .models import Diapositiva
 import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from chatgpteros.settings import BASE_DIR
+BASE_DIR2 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def home(request):  
     return render(request, 'core/home.html')
@@ -144,7 +144,7 @@ def generar_archivo_presentacion(presentacion):
     
     # Ruta del directorio donde deseas guardar los archivos
     ruta_directorio  = os.path.join(BASE_DIR, "archivos_.txt")
-    ruta_directorio2  = os.path.join(BASE_DIR, "archivos_.md")
+    ruta_directorio2  = os.path.join(BASE_DIR2, "archivos_.md")
 
     
     # Si la ruta no existe, crea el directorio
