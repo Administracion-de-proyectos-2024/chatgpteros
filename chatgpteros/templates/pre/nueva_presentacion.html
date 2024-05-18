@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-
+{% load static %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="es">
@@ -15,15 +15,16 @@
         }
     </style>
 </head>
-<body>
     <h1>Nueva Presentación</h1>
     <form id="presentation-form" method="post">
         {% csrf_token %}
-        <label for="id_nombre">Titulo:</label>
-        {{ presentacion_form.nombre }}
-        <br> <!-- Agrega un salto de línea aquí -->
-        <label for="id_descripcion">Descripción:</label>
-        {{ presentacion_form.descripcion }}
+        <fieldset id="presentacion">
+            <label for="id_nombre">Titulo:</label>
+            {{ presentacion_form.nombre }}
+            <br> <!-- Agrega un salto de línea aquí -->
+            <label for="id_descripcion">Descripción:</label>
+            <textarea id="id_descripcion" name="descripcion" class="markdown-editor"></textarea>
+        </fieldset>
         <fieldset id="diapositivas">
             <legend>Diapositivas</legend>
             {{ diapositiva_formset.management_form }}
@@ -45,44 +46,9 @@
         </fieldset>
         <button type="submit">Guardar</button>
     </form>
-
     <input type="hidden" id="id_form-TOTAL_FORMS" name="form-TOTAL_FORMS" value="{{ diapositiva_formset.total_form_count }}">
-
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var addButton = document.getElementById('agregar-diapositiva');
-            var formset = document.getElementById('formset-container');
-            var totalForms = document.getElementById('id_diapositiva_set-TOTAL_FORMS');
-    
-            addButton.addEventListener('click', function() {
-                var formIndex = parseInt(totalForms.value); // Obtener el índice actual del formulario
-    
-                // Crear un nuevo formulario de diapositivas
-                var newForm = document.createElement('div');
-                newForm.className = 'formset-row';
-                newForm.innerHTML = `
-                    <p><label for="id_diapositiva_set-${formIndex}-subtitulo">Subtítulo (opcional):</label> <input type="text" id="id_diapositiva_set-${formIndex}-subtitulo" name="diapositiva_set-${formIndex}-subtitulo"></p>
-                    <p><label for="id_diapositiva_set-${formIndex}-contenido">Contenido:</label> <textarea id="id_diapositiva_set-${formIndex}-contenido" name="diapositiva_set-${formIndex}-contenido" class="markdown-editor"></textarea></p>
-                `;
-    
-                formset.appendChild(newForm); // Agregar el nuevo formulario al DOM
-    
-                formIndex++;
-                totalForms.setAttribute('value', formIndex); // Actualizar el valor del contador de formularios
-
-                // Inicializar SimpleMDE para el nuevo campo de contenido
-                var newContentTextarea = newForm.querySelector('.markdown-editor');
-                new SimpleMDE({ element: newContentTextarea });
-            });
-        });
-
-        var existingContentTextareas = document.querySelectorAll('.markdown-editor');
-        existingContentTextareas.forEach(function(textarea) {
-            new SimpleMDE({ element: textarea });
-            textarea.removeAttribute('required');  // Agrega esta línea
-        });
-    </script>
+    <script src="{% static 'js/simplemde.min.js' %}"></script>
+    <script src="{% static 'js/diapos.js' %}"></script>
 </body>
 </html>
 {% endblock %}
