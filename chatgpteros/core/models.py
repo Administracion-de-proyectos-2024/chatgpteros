@@ -14,3 +14,9 @@ class Diapositiva(models.Model):
     contenido = models.TextField()
 
 
+# Model que representa las notificaciones que se envían a los usuarios dentro de aplicación
+class Notificacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    mensaje = models.CharField(max_length=255)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    leida = models.BooleanField(default=False)

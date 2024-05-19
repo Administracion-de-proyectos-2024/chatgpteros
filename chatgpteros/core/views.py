@@ -5,7 +5,12 @@ from .forms import CustomUserCreationForm, DiapositivaFormSet, PresentacionForm
 from .models import Diapositiva, Presentacion
 from .forms import CustomUserCreationForm
 from .models import Diapositiva
+from .models import Notificacion
 import os
+
+
+from .models import Notificacion
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -173,4 +178,45 @@ def generar_archivo_presentacion(presentacion):
         archivo.write(contenido)
         
     with open(ruta_archivo2, 'w') as archivo:
-        archivo.write(contenido2)        
+        archivo.write(contenido2)   
+
+
+@login_required
+def nueva_presentacion(request):
+    if request.method == 'POST':
+        presentacion_form = PresentacionForm(request.POST)
+        diapositiva_formset = DiapositivaFormSet(request.POST)
+        
+        if presentacion_form.is_valid() and diapositiva_formset.is_valid():
+            presentacion = presentacion_form.save()  # Guardar la presentación primero
+            num_diapositivas = 0
+            
+            for form in diapositiva_formset:
+                diapositiva = form.save(commit=False)
+                diapositiva.presentacion = presentacion  # Asignar la presentación a cada diapositiva
+                diapositiva.save()
+                num_diapositivas += 1  # Incrementar el contador
+                
+            # Crear una notificación con el número de diapositivas agregadas
+            mensaje = f'Se han subido {num_diapositivas} nuevas diapositivas a la presentación: {presentacion.nombre}'
+            Notificacion.objects.create(usuario=request.user, mensaje=mensaje)
+            
+            # Llamar a la función para generar el archivo de texto
+            generar_archivo_presentacion(presentacion)
+            
+            # Redirigir a la página de notificaciones
+            return redirect('mostrar_notificaciones')
+    else:
+        presentacion_form = PresentacionForm()
+        diapositiva_formset = DiapositivaFormSet(queryset=Diapositiva.objects.none())
+    
+    return render(request, 'pre/nueva_presentacion.html', {
+        'presentacion_form': presentacion_form,
+        'diapositiva_formset': diapositiva_formset
+    }) 
+
+#Vista para la notificacion de agregación de nueva dispositiva
+@login_required
+def mostrar_notificaciones(request):
+    notificaciones = Notificacion.objects.filter(usuario=request.user)
+    return render(request, 'core/notificaciones.html', {'notificaciones': notificaciones})

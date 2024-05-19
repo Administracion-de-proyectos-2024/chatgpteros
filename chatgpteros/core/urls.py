@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('logout/', views.exit, name='exit'),
@@ -12,4 +13,8 @@ urlpatterns = [
 
     path('presentacion/<int:pk>/editar/', views.editar_presentacion, name='editar_presentacion'),
     path('presentacion/<int:pk>/eliminar/', views.eliminar_presentacion, name='eliminar_presentacion'),
+
+    #URL  para la ventana de notifiaciones
+    path('mostrar_notificaciones/', views.mostrar_notificaciones, name='mostrar_notificaciones'),
+   
 ]
