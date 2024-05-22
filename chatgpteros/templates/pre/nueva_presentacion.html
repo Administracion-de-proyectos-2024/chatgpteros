@@ -129,10 +129,27 @@
             var addButton = document.getElementById('agregar-diapositiva');
             var formset = document.getElementById('formset-container');
             var totalForms = document.getElementById('id_diapositiva_set-TOTAL_FORMS');
-            var titleDescriptionShown = false;
             var descripcionTextarea = document.getElementById('id_descripcion');
-            var descripcionEditor = new SimpleMDE({ element: descripcionTextarea });
+            var colorPicker = document.getElementById('colorPicker');
             var converter = new showdown.Converter();
+
+            var descripcionEditor = new SimpleMDE({
+                element: descripcionTextarea,
+                toolbar: [
+                    {
+                        name: "colorPicker",
+                        action: function customFunction(editor){
+                            colorPicker.click();
+                            colorPicker.oninput = function() {
+                                changeTextColor(editor, colorPicker.value);
+                            };
+                        },
+                        className: "fa fa-paint-brush",
+                        title: "Color Picker",
+                    },
+                    '|', 'bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'
+                ]
+            });
 
             descripcionEditor.codemirror.on("change", function() {
                 var titulo = document.getElementById('id_nombre').value;
@@ -143,39 +160,35 @@
                     presentationDetails.innerHTML = `<h1>${titulo}</h1>`;
                     descriptionDetails.innerHTML = `<p>${descripcion}</p>`;
                 }
-                // Actualizar la vista previa de todas las diapositivas
                 updateAllSlidePreviews();
             });
 
             document.getElementById('id_nombre').addEventListener('input', function() {
                 var titulo = this.value;
-                var descripcion = document.getElementById('id_descripcion').value;
                 var presentationDetails = document.getElementById('presentation-details');
                 if (presentationDetails) {
                     presentationDetails.innerHTML = `<h1>${titulo}</h1>`;
                 }
-                // Actualizar la vista previa de todas las diapositivas
                 updateAllSlidePreviews();
             });
 
             document.getElementById('id_descripcion').addEventListener('input', function() {
-                var titulo = document.getElementById('id_nombre').value;
                 var descripcion = this.value;
                 var descriptionDetails = document.getElementById('description-details');
                 if (descriptionDetails) {
                     descriptionDetails.innerHTML = `<p>${descripcion}</p>`;
                 }
-                // Actualizar la vista previa de todas las diapositivas
                 updateAllSlidePreviews();
             });
 
             function updateAllSlidePreviews() {
                 var existingContentTextareas = document.querySelectorAll('.markdown-editor');
                 existingContentTextareas.forEach(function(textarea, index) {
-                    
                     var contenido = textarea.value;
+                    var subtitulo = document.getElementById(`id_diapositiva_set-${index}-subtitulo`).value;
                     updateSlidePreview(
                         document.getElementById('id_nombre').value,
+                        document.getElementById('id_descripcion').value,
                         subtitulo,
                         contenido,
                         index
@@ -184,10 +197,26 @@
             }
 
             var initializeMarkdownEditor = function(textarea, index) {
-                    var simplemde = new SimpleMDE({ element: textarea });
-                    textarea.removeAttribute('required');
-                    
-                    // Evento de cambio en el editor Markdown
+                var simplemde = new SimpleMDE({
+                    element: textarea,
+                    toolbar: [
+                        {
+                            name: "colorPicker",
+                            action: function customFunction(editor){
+                                colorPicker.click();
+                                colorPicker.oninput = function() {
+                                    changeTextColor(editor, colorPicker.value);
+                                };
+                            },
+                            className: "fa fa-paint-brush",
+                            title: "Color Picker",
+                        },
+                        '|', 'bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'
+                    ]
+                });
+
+                textarea.removeAttribute('required');
+
                 simplemde.codemirror.on("change", function() {
                     var titulo = document.getElementById('id_nombre').value;
                     var descripcion = document.getElementById('id_descripcion').value;
@@ -195,8 +224,7 @@
                     var contenido = simplemde.value();
                     updateSlidePreview(titulo, descripcion, subtitulo, contenido, index);
                 });
-                
-                // Evento de entrada en el campo de subtítulo
+
                 document.getElementById(`id_diapositiva_set-${index}-subtitulo`).addEventListener('input', function() {
                     var titulo = document.getElementById('id_nombre').value;
                     var descripcion = document.getElementById('id_descripcion').value;
@@ -204,8 +232,7 @@
                     var contenido = simplemde.value();
                     updateSlidePreview(titulo, descripcion, subtitulo, contenido, index);
                 });
-                
-                // Evento de entrada en el campo de contenido
+
                 textarea.addEventListener('input', function() {
                     var titulo = document.getElementById('id_nombre').value;
                     var descripcion = document.getElementById('id_descripcion').value;
@@ -214,6 +241,18 @@
                     updateSlidePreview(titulo, descripcion, subtitulo, contenido, index);
                 });
             };
+
+            function changeTextColor(editor, color) {
+                var cm = editor.codemirror;
+                var doc = cm.getDoc();
+                var cursor = doc.getCursor();
+                var selection = doc.getSelection();
+                if (selection) {
+                    doc.replaceSelection(`<span style="color:${color}">${selection}</span>`);
+                } else {
+                    doc.replaceRange(`<span style="color:${color}"></span>`, cursor);
+                }
+            }
 
             var updateSlidePreview = function(titulo, descripcion, subtitulo, contenido, index) {
                 var formData = new FormData();
@@ -232,19 +271,16 @@
                 .then(html => {
                     var slidePreviewId = index === -1 ? 'presentation-preview' : 'slide-preview-' + index;
                     var slidePreview = document.getElementById(slidePreviewId);
-                    if (!slidePreview) {  // Verificar si la diapositiva no existe
+                    if (!slidePreview) {
                         slidePreview = document.createElement('div');
                         slidePreview.id = slidePreviewId;
                         document.getElementById('vista-previa').appendChild(slidePreview);
                     }
-                    // Vaciar completamente el contenido antes de agregar el nuevo contenido
-                    slidePreview.innerHTML = '';
-                    // Agregar el nuevo contenido
                     slidePreview.innerHTML = html;
                 })
                 .catch(error => console.error('Error:', error));
             };
-    
+
             addButton.addEventListener('click', function() {
                 var formIndex = parseInt(totalForms.value);
 
@@ -266,7 +302,6 @@
                 totalForms.setAttribute('value', formIndex);
             });
 
-            // Mover la inicialización de los editores Markdown y la configuración de los eventos de entrada aquí
             var existingContentTextareas = document.querySelectorAll('.markdown-editor');
             existingContentTextareas.forEach(function(textarea, index) {
                 if (textarea.value === 'None') {
@@ -285,6 +320,8 @@
             });
         });
     </script>
+<input type="color" id="colorPicker" style="display:none">
+
     
 </body>
 </html>
